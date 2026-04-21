@@ -2,150 +2,179 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gym Timer Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TRAINLAB - Gym App</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.0/lucide.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #0F0F15; color: white; }
-        .neon-shadow { box-shadow: 0 0 15px rgba(226, 255, 59, 0.3); }
+        body { font-family: 'Inter', sans-serif; background-color: #0F0F15; color: white; -webkit-tap-highlight-color: transparent; }
+        .bg-card { background-color: #1A1A24; }
+        .bg-input { background-color: #12121A; }
+        .accent-yellow { background-color: #E2FF3B; color: #000; }
+        .neon-glow { box-shadow: 0 0 20px rgba(226, 255, 59, 0.2); }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
     </style>
 </head>
 <body>
-    <div id="app" class="max-w-md mx-auto min-h-screen relative">
-        
-        <div v-if="screen === 'config'" class="p-6 pb-32">
-            <h1 class="text-[#E2FF3B] font-black text-2xl mb-6 tracking-tighter italic">TRAIN_APP v1.0</h1>
-            
+    <div id="app" class="max-w-md mx-auto min-h-screen">
+
+        <div v-if="screen === 'menu'" class="p-8 pt-16">
+            <h1 class="text-3xl font-black italic mb-2 tracking-tighter text-center">TRAIN<span class="text-[#E2FF3B]">LAB</span></h1>
+            <p class="text-gray-500 text-center text-[10px] uppercase tracking-[0.3em] mb-12">Selecciona modalidad</p>
+
             <div class="space-y-4">
-                <div v-for="(ex, index) in exercises" :key="ex.id" class="bg-[#1A1A24] p-4 rounded-2xl border border-gray-800">
-                    <div class="flex items-center gap-3 mb-4">
-                        <span class="text-[#E2FF3B] font-bold">{{ index + 1 }}</span>
-                        <input v-model="ex.name" placeholder="Ejercicio..." class="bg-[#252533] rounded-lg px-3 py-2 flex-1 outline-none text-sm">
-                        <button @click="removeExercise(index)" class="text-gray-600">×</button>
-                    </div>
+                <button @click="screen = 'builder'" class="w-full py-6 rounded-full font-black text-xl uppercase tracking-wider bg-[#E2FF3B] text-black neon-glow flex items-center justify-center gap-3">
+                    <i class="fas fa-layer-group text-sm"></i> Builder
+                </button>
+                <button @click="openQuick('AMRAP', '#D97706')" class="w-full py-6 rounded-full font-black text-xl uppercase bg-[#D97706] shadow-lg">AMRAP</button>
+                <button @click="openQuick('FOR TIME', '#4F46E5')" class="w-full py-6 rounded-full font-black text-xl uppercase bg-[#4F46E5] shadow-lg">For Time</button>
+                <button @click="openQuick('EMOM', '#9333EA')" class="w-full py-6 rounded-full font-black text-xl uppercase bg-[#9333EA] shadow-lg">EMOM</button>
+                <button @click="openQuick('TABATA', '#10B981')" class="w-full py-6 rounded-full font-black text-xl uppercase bg-[#10B981] shadow-lg">TABATA</button>
+            </div>
+        </div>
 
-                    <div class="grid grid-cols-2 gap-3 mb-4">
-                        <div class="bg-[#252533] p-2 rounded-xl text-center">
-                            <span class="text-[10px] text-gray-500 block uppercase">Reps / %</span>
-                            <input v-model="ex.note" class="bg-transparent text-center font-bold w-full outline-none text-sm" placeholder="6 / 75%">
-                        </div>
-                        <div class="bg-[#252533] p-2 rounded-xl text-center">
-                            <span class="text-[10px] text-gray-500 block uppercase">Descanso (s)</span>
-                            <input v-model.number="ex.restTime" type="number" class="bg-transparent text-center font-bold w-full outline-none text-sm text-cyan-400">
-                        </div>
-                    </div>
+        <div v-if="screen === 'builder'" class="p-6 pb-32">
+            <div class="flex items-center mb-8">
+                <button @click="screen = 'menu'" class="text-gray-400 mr-4"><i class="fas fa-arrow-left"></i></button>
+                <h1 class="text-2xl font-black uppercase italic tracking-tight text-white">Nuevo Entreno</h1>
+            </div>
 
-                    <div class="flex gap-2">
-                        <button @click="ex.workMode = 'libre'" :class="ex.workMode === 'libre' ? 'bg-[#E2FF3B] text-black' : 'bg-gray-800 text-gray-400'" class="flex-1 py-2 rounded-lg text-[10px] font-bold transition-all">LIBRE</button>
-                        <button @click="ex.workMode = 'tiempo'" :class="ex.workMode === 'tiempo' ? 'bg-[#E2FF3B] text-black' : 'bg-gray-800 text-gray-400'" class="flex-1 py-2 rounded-lg text-[10px] font-bold transition-all">TIEMPO</button>
+            <div class="space-y-6 mb-8">
+                <div>
+                    <label class="text-[10px] uppercase text-gray-500 font-bold block mb-2">Nombre</label>
+                    <input v-model="routine.name" placeholder="PUSH DAY..." class="w-full bg-input border border-gray-800 rounded-xl p-4 font-semibold outline-none focus:border-[#E2FF3B]">
+                </div>
+                <div>
+                    <label class="text-[10px] uppercase text-gray-500 font-bold block mb-2">Series Globales</label>
+                    <div class="flex items-center gap-4">
+                        <button @click="routine.series > 1 ? routine.series-- : 1" class="w-12 h-10 bg-input border border-gray-800 rounded-lg font-bold">-</button>
+                        <span class="text-3xl font-black text-[#E2FF3B]">{{ routine.series }}</span>
+                        <button @click="routine.series++" class="w-12 h-10 bg-input border border-gray-800 rounded-lg font-bold">+</button>
                     </div>
                 </div>
             </div>
 
-            <button @click="addExercise" class="w-full mt-6 py-4 border-2 border-dashed border-gray-800 rounded-2xl text-gray-500 font-bold">+ AÑADIR</button>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-[10px] uppercase text-gray-500 font-bold">Ejercicios</h2>
+                <button @click="addExercise" class="accent-yellow px-4 py-1.5 rounded-lg text-[10px] font-black uppercase">+ Añadir</button>
+            </div>
 
-            <div class="fixed bottom-6 left-0 right-0 px-6">
-                <button @click="startWorkout" class="w-full bg-[#E2FF3B] text-black font-black py-4 rounded-2xl neon-shadow uppercase tracking-widest active:scale-95 transition-transform">
-                    Empezar Entrenamiento
-                </button>
+            <div v-if="routine.exercises.length === 0" @click="addExercise" class="border-2 border-dashed border-gray-800 rounded-2xl py-10 text-center text-gray-600 font-bold text-xs">
+                AÑADE EJERCICIOS ↑
+            </div>
+
+            <div v-for="(ex, index) in routine.exercises" :key="ex.id" class="bg-card rounded-2xl p-5 border border-gray-800 mb-4">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-[#E2FF3B] font-black italic text-xl">{{ index + 1 }}</span>
+                    <input v-model="ex.name" placeholder="Ejercicio..." class="bg-input rounded-lg px-3 py-2 flex-1 outline-none text-sm">
+                    <button @click="removeExercise(index)" class="text-red-900/50"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <input v-model="ex.note" placeholder="Nota (75%, AHAP...)" class="bg-input p-3 rounded-xl text-xs text-center border border-gray-800">
+                    <div class="bg-input p-3 rounded-xl text-xs flex items-center justify-center gap-2 border border-gray-800">
+                        <span class="text-gray-500">DESC:</span>
+                        <input v-model.number="ex.restTime" class="bg-transparent text-cyan-400 font-bold w-8 text-center">
+                    </div>
+                </div>
+            </div>
+
+            <div class="fixed bottom-0 left-0 right-0 p-6 bg-[#0F0F15]/90 backdrop-blur-md flex gap-4">
+                <button @click="screen = 'menu'" class="flex-1 bg-card py-4 rounded-2xl font-bold uppercase text-xs text-gray-400">Cancelar</button>
+                <button @click="startWorkout" class="flex-[1.5] accent-yellow py-4 rounded-2xl font-black uppercase text-xs">Empezar ✓</button>
             </div>
         </div>
 
-        <div v-else :class="isResting ? 'bg-blue-950' : 'bg-[#0F0F15]'" class="h-screen flex flex-col items-center justify-between p-8 transition-colors duration-500">
-            <div class="text-center mt-8">
-                <p class="text-yellow-400 font-bold tracking-widest text-xs uppercase mb-2">
-                    {{ isResting ? 'Descanso' : 'Trabajando' }}
-                </p>
-                <h2 class="text-3xl font-black uppercase italic">{{ currentEx.name || 'Ejercicio' }}</h2>
-                <p class="text-gray-400 mt-2">{{ currentEx.note }}</p>
+        <div v-if="screen === 'play'" :class="isResting ? 'bg-blue-950' : 'bg-[#0F0F15]'" class="h-screen flex flex-col items-center justify-between p-10 transition-colors duration-500">
+            <div class="text-center">
+                <p class="text-[#E2FF3B] font-bold text-xs uppercase mb-2 tracking-widest">{{ isResting ? 'Descansa' : 'Trabaja' }}</p>
+                <h2 class="text-3xl font-black italic uppercase">{{ currentEx.name || 'Go!' }}</h2>
+                <p class="text-gray-500 mt-2">{{ currentEx.note }}</p>
             </div>
 
-            <div class="text-[120px] font-black font-mono leading-none" :class="isResting ? 'text-cyan-400' : 'text-[#E2FF3B]'">
+            <div class="text-[120px] font-black font-mono" :class="isResting ? 'text-cyan-400' : 'text-white'">
                 {{ formatTime(timer) }}
             </div>
 
-            <div class="w-full space-y-4 mb-8">
-                <button @click="nextStep" class="w-full bg-white text-black font-black py-5 rounded-2xl text-xl uppercase tracking-tighter">
-                    {{ isResting ? 'Saltar Descanso' : 'Siguiente' }}
+            <div class="w-full space-y-4">
+                <button @click="nextStep" class="w-full bg-white text-black py-6 rounded-3xl font-black text-2xl uppercase tracking-tighter">
+                    {{ isResting ? 'Saltar Descanso' : 'Hecho' }}
                 </button>
-                <button @click="screen = 'config'" class="w-full text-gray-500 font-bold py-2">CANCELAR</button>
+                <button @click="stopWorkout" class="w-full text-gray-600 font-bold uppercase text-xs tracking-widest">Finalizar</button>
             </div>
         </div>
-
     </div>
 
     <script>
         const { createApp } = Vue;
-
         createApp({
             data() {
                 return {
-                    screen: 'config',
-                    exercises: JSON.parse(localStorage.getItem('gym_v1')) || [{ id: 1, name: "Bench Press", note: "6 reps", workMode: "libre", restTime: 60 }],
-                    currentIdx: 0,
+                    screen: 'menu',
+                    routine: JSON.parse(localStorage.getItem('traindata')) || { name: "", series: 3, exercises: [] },
+                    currentExIdx: 0,
                     isResting: false,
                     timer: 0,
                     interval: null
                 }
             },
             computed: {
-                currentEx() { return this.exercises[this.currentIdx]; }
-            },
-            watch: {
-                exercises: {
-                    handler(val) { localStorage.setItem('gym_v1', JSON.stringify(val)); },
-                    deep: true
-                }
+                currentEx() { return this.routine.exercises[this.currentExIdx] || {}; }
             },
             methods: {
                 addExercise() {
-                    this.exercises.push({ id: Date.now(), name: "", note: "", workMode: "libre", restTime: 60 });
+                    this.routine.exercises.push({ id: Date.now(), name: "", note: "", restTime: 60 });
                 },
-                removeExercise(index) {
-                    this.exercises.splice(index, 1);
-                },
+                removeExercise(idx) { this.routine.exercises.splice(idx, 1); },
                 formatTime(s) {
-                    const mins = Math.floor(s / 60);
-                    const secs = s % 60;
-                    return `${mins}:${secs.toString().padStart(2, '0')}`;
+                    const m = Math.floor(s / 60);
+                    const sc = s % 60;
+                    return `${m}:${sc.toString().padStart(2, '0')}`;
                 },
                 startWorkout() {
+                    if(this.routine.exercises.length === 0) return alert("Añade ejercicios primero");
+                    localStorage.setItem('traindata', JSON.stringify(this.routine));
                     this.screen = 'play';
-                    this.currentIdx = 0;
+                    this.currentExIdx = 0;
                     this.isResting = false;
-                    this.startPhase();
+                    this.timer = 0;
+                    this.runTimer();
                 },
-                startPhase() {
+                runTimer() {
                     clearInterval(this.interval);
-                    if (this.isResting) {
-                        this.timer = this.currentEx.restTime;
-                        this.interval = setInterval(() => {
-                            if (this.timer > 0) this.timer--;
+                    this.interval = setInterval(() => {
+                        if(this.isResting) {
+                            if(this.timer > 0) this.timer--;
                             else this.nextStep();
-                        }, 1000);
-                    } else {
-                        this.timer = 0;
-                        this.interval = setInterval(() => { this.timer++; }, 1000);
-                    }
+                        } else {
+                            this.timer++;
+                        }
+                    }, 1000);
                 },
                 nextStep() {
-                    if (!this.isResting) {
+                    if(!this.isResting) {
                         this.isResting = true;
-                        this.startPhase();
+                        this.timer = this.currentEx.restTime;
                     } else {
-                        if (this.currentIdx < this.exercises.length - 1) {
-                            this.currentIdx++;
-                            this.isResting = false;
-                            this.startPhase();
+                        this.isResting = false;
+                        this.timer = 0;
+                        if(this.currentExIdx < this.routine.exercises.length - 1) {
+                            this.currentExIdx++;
                         } else {
                             alert("¡Entrenamiento completado!");
-                            this.screen = 'config';
-                            clearInterval(this.interval);
+                            this.stopWorkout();
                         }
                     }
+                },
+                stopWorkout() {
+                    clearInterval(this.interval);
+                    this.screen = 'menu';
+                },
+                openQuick(mode) {
+                    alert("Modo " + mode + " próximamente. ¡Céntrate en el Builder por ahora!");
                 }
             }
         }).mount('#app');
