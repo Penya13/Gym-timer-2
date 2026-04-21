@@ -4,35 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>BOXTIMER</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BOXTIMER">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%230A0A0C%22/><text y=%2250%%22 x=%2250%%22 font-family=%22Teko, sans-serif%22 font-weight=%22bold%22 font-size=%2240%22 text-anchor=%22middle%22 fill=%22%23E2FF3B%22 dy=%22.35em%22 font-style=%22italic%22>BOX</text></svg>">
+
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;600;700&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    
     <style>
         :root { --accent: #E2FF3B; --bg: #0A0A0C; --card: #16161E; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
         .font-teko { font-family: 'Teko', sans-serif; }
+        
         .card-workout { background: var(--card); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .btn-accent { background: var(--accent); color: black; font-weight: 900; border-radius: 14px; transition: all 0.2s; }
         .btn-accent:active { transform: scale(0.96); }
+        
         .input-xl { background: #000; border: 1px solid #2D2D3A; border-radius: 14px; padding: 16px; font-size: 1.1rem; font-weight: 700; outline: none; width: 100%; color: white; }
+        
         .btn-amrap-flat { background: var(--accent); color: black; border-radius: 40px; font-weight: 900; font-size: 6rem; line-height: 1; border: none; }
+        
         .countdown-overlay { background: rgba(0,0,0,0.95); backdrop-filter: blur(15px); z-index: 100; }
+        
         select { appearance: none; background: transparent; text-align-last: center; color: var(--accent); font-weight: 800; border: none; outline: none; cursor: pointer; }
         option { background: #16161E; color: white; }
+        
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
     </style>
 </head>
 <body>
     <div id="app" class="max-w-md mx-auto min-h-screen flex flex-col">
 
-        <div v-if="isCountingDown" class="fixed inset-0 countdown-overlay flex flex-col items-center justify-center animate-in fade-in duration-300">
+        <div v-if="isCountingDown" class="fixed inset-0 countdown-overlay flex flex-col items-center justify-center">
             <p class="text-[#E2FF3B] font-teko text-3xl uppercase tracking-[0.5em] mb-4 italic">Prepárate</p>
             <div class="text-[200px] font-teko font-bold leading-none text-white">{{ countdownTimer }}</div>
         </div>
 
-        <div v-if="screen === 'menu'" class="p-6 pt-12 animate-in fade-in">
-            <h1 class="text-6xl font-teko font-bold tracking-tighter uppercase leading-none mb-10 text-center">BOX<span class="text-[#E2FF3B]">TIMER</span></h1>
-            <button @click="openBuilder()" class="btn-accent w-full py-5 mb-8 text-2xl font-teko uppercase italic tracking-wider">+ Nuevo Entreno</button>
+        <div v-if="screen === 'menu'" class="p-6 pt-12">
+            <h1 class="text-6xl font-teko font-bold tracking-tighter uppercase mb-10 text-center italic">BOX<span class="text-[#E2FF3B]">TIMER</span></h1>
+            <button @click="openBuilder()" class="btn-accent w-full py-5 mb-8 text-2xl font-teko uppercase italic tracking-wider shadow-lg">+ Nuevo Entreno</button>
 
             <div class="grid grid-cols-2 gap-4 mb-12">
                 <div @click="openQuick('AMRAP')" class="bg-card h-32 flex flex-col items-center justify-center rounded-[30px] border border-orange-500/20 active:scale-95 transition-transform">
@@ -71,49 +86,53 @@
             </div>
 
             <div class="space-y-6">
-                <div v-if="activeMode === 'FOR TIME'" class="flex bg-card p-1.5 rounded-2xl mb-4">
+                <div v-if="activeMode === 'FOR TIME'" class="flex bg-card p-1.5 rounded-2xl">
                     <button @click="forTimeType = 'up'" :class="forTimeType === 'up' ? 'btn-accent' : 'text-gray-500'" class="flex-1 py-4 rounded-xl font-bold text-xs uppercase text-center">Crono Up</button>
                     <button @click="forTimeType = 'down'" :class="forTimeType === 'down' ? 'btn-accent' : 'text-gray-500'" class="flex-1 py-4 rounded-xl font-bold text-xs uppercase text-center">Time Cap</button>
                 </div>
 
                 <div class="card-workout p-10 text-center">
                     <div v-if="activeMode === 'AMRAP' || (activeMode === 'FOR TIME' && forTimeType === 'down')">
-                        <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-4 text-center">Minutos totales</label>
+                        <label class="text-[10px] font-black text-gray-500 uppercase block mb-4 text-center">Minutos</label>
                         <select v-model="quickDuration" class="text-8xl font-teko">
                             <option v-for="n in 60" :key="n" :value="n">{{ n }}</option>
                         </select>
                     </div>
                     <div v-if="activeMode === 'EMOM'" class="space-y-10">
-                        <div><label class="text-[10px] font-black text-gray-500 uppercase block mb-4 text-center">Cada</label><select v-model="emomInterval" class="text-6xl font-teko"><option v-for="opt in emomOptions" :value="opt.val">{{ opt.label }}</option></select></div>
-                        <div><label class="text-[10px] font-black text-gray-500 uppercase block mb-4 text-center">Rondas</label><select v-model="quickRounds" class="text-6xl font-teko"><option v-for="n in 50" :value="n">{{ n }}</option></select></div>
+                        <div><label class="text-[10px] font-black text-gray-500 uppercase block mb-4 text-center">Intervalo</label><select v-model="emomInterval" class="text-6xl font-teko"><option v-for="opt in emomOptions" :value="opt.val">{{ opt.label }}</option></select></div>
+                        <div><label class="text-[10px] font-black text-gray-500 uppercase block mb-4 text-center">Rondas totales</label><select v-model="quickRounds" class="text-6xl font-teko"><option v-for="n in 50" :value="n">{{ n }}</option></select></div>
                     </div>
                     <div v-if="activeMode === 'TABATA'" class="space-y-8">
                         <div class="grid grid-cols-2 gap-4">
-                            <div><p class="text-[10px] text-gray-500 mb-2">WORK (S)</p><select v-model.number="tabataWork" class="text-5xl font-teko"><option v-for="s in [10,15,20,30,40,45,60]" :value="s">{{s}}</option></select></div>
-                            <div><p class="text-[10px] text-cyan-500 mb-2">REST (S)</p><select v-model.number="tabataRest" class="text-5xl font-teko text-cyan-400"><option v-for="s in [0,5,10,15,20,30]" :value="s">{{s}}</option></select></div>
+                            <div><p class="text-[10px] text-gray-500 mb-2 uppercase">Work (s)</p><select v-model.number="tabataWork" class="text-5xl font-teko"><option v-for="s in [10,15,20,30,40,45,60]" :value="s">{{s}}</option></select></div>
+                            <div><p class="text-[10px] text-cyan-500 mb-2 uppercase">Rest (s)</p><select v-model.number="tabataRest" class="text-5xl font-teko text-cyan-400"><option v-for="s in [0,5,10,15,20,30]" :value="s">{{s}}</option></select></div>
                         </div>
-                        <div class="pt-6 border-t border-white/5 text-center"><p class="text-[10px] text-gray-500 mb-2">RONDAS</p><select v-model="quickRounds" class="text-6xl font-teko"><option v-for="n in [4,8,12,16,20,24,30,40]" :value="n">{{n}}</option></select></div>
+                        <div class="pt-6 border-t border-white/5"><p class="text-[10px] text-gray-500 mb-2 uppercase">Rondas totales</p><select v-model="quickRounds" class="text-6xl font-teko"><option v-for="n in [4,8,12,16,20,24,30,40]" :value="n">{{n}}</option></select></div>
                     </div>
                 </div>
             </div>
-            <button @click="preStart" class="btn-accent w-full py-6 mt-10 text-3xl font-teko tracking-widest uppercase italic">Comenzar</button>
+            <button @click="preStart" class="btn-accent w-full py-6 mt-10 text-3xl font-teko tracking-widest uppercase italic shadow-lg">Comenzar</button>
         </div>
 
         <div v-else-if="screen === 'builder'" class="p-6 pt-10 pb-40">
             <div class="flex items-center mb-10">
                 <button @click="screen = 'menu'"><i class="fas fa-chevron-left text-2xl"></i></button>
-                <h1 class="flex-1 text-center font-teko text-4xl uppercase italic tracking-widest text-center">Editor</h1>
+                <h1 class="flex-1 text-center font-teko text-4xl uppercase italic tracking-widest">Editor</h1>
             </div>
             <div class="card-workout p-8 mb-8">
                 <label class="text-[10px] font-black text-gray-500 uppercase mb-3 block">Nombre</label>
                 <input v-model="routine.name" placeholder="STRENGTH..." class="bg-transparent text-4xl font-teko font-bold border-b border-white/10 w-full mb-8 outline-none uppercase text-center">
                 <div class="flex items-center justify-between bg-black/40 p-5 rounded-2xl">
                     <span class="font-bold text-sm">SERIES</span>
-                    <div class="flex items-center gap-6"><button @click="routine.series > 1 ? routine.series-- : 1" class="text-2xl">-</button><span class="text-3xl font-teko text-[#E2FF3B]">{{ routine.series }}</span><button @click="routine.series++" class="text-2xl">+</button></div>
+                    <div class="flex items-center gap-6">
+                        <button @click="routine.series > 1 ? routine.series-- : 1" class="text-2xl">-</button>
+                        <span class="text-4xl font-teko text-[#E2FF3B]">{{ routine.series }}</span>
+                        <button @click="routine.series++" class="text-2xl">+</button>
+                    </div>
                 </div>
             </div>
             <div v-for="(ex, index) in routine.exercises" :key="ex.id" class="card-workout p-8 mb-6 border-l-8 border-[#E2FF3B]">
-                <div class="flex items-center gap-4 mb-6"><div class="text-4xl font-teko font-bold opacity-20">{{ index + 1 }}</div><input v-model="ex.name" placeholder="Ejercicio..." class="input-xl uppercase"><button @click="removeExercise(index)" class="text-red-500/20 text-2xl">×</button></div>
+                <div class="flex items-center gap-4 mb-6"><div class="text-4xl font-teko font-bold opacity-20 italic">{{ index + 1 }}</div><input v-model="ex.name" placeholder="Ejercicio..." class="input-xl uppercase"><button @click="removeExercise(index)" class="text-red-500/20 text-2xl">×</button></div>
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div><label class="text-[9px] font-black text-gray-500 mb-2 block uppercase">Reps</label><input v-model="ex.reps" type="number" class="input-xl text-center"></div>
                     <div><label class="text-[9px] font-black text-gray-500 mb-2 block uppercase">Modo</label><select v-model="ex.workMode" class="input-xl text-xs"><option value="libre">LIBRE</option><option value="tiempo">TIEMPO</option></select></div>
@@ -133,52 +152,50 @@
                 <h2 class="text-6xl font-teko font-bold uppercase italic tracking-tight mb-2">{{ isResting ? 'Descanso' : (activeMode === 'BUILDER' ? routine.name : activeMode) }}</h2>
                 
                 <div class="text-[#E2FF3B] font-teko text-3xl italic uppercase tracking-widest mt-2">
-                    <span v-if="activeMode === 'BUILDER'">Serie {{ currentRound }} / {{ routine.series }} <span class="opacity-30 ml-2 text-white">| Ex {{ currentExIdx + 1 }} / {{ routine.exercises.length }}</span></span>
+                    <span v-if="activeMode === 'BUILDER'">Serie {{ currentRound }} / {{ routine.series }} <span class="opacity-30 ml-2 text-white italic">| Ex {{ currentExIdx + 1 }} / {{ routine.exercises.length }}</span></span>
                     <span v-else-if="activeMode === 'EMOM' || activeMode === 'TABATA'">Ronda {{ currentRound }} / {{ quickRounds }}</span>
                     <span v-else-if="activeMode === 'AMRAP'">Rondas: {{ rounds }}</span>
                 </div>
-                <div v-if="activeMode === 'BUILDER' && !isResting" class="mt-4 text-white font-teko text-2xl uppercase">{{ currentEx.name }} <span class="text-[#E2FF3B]" v-if="currentEx.reps">x{{ currentEx.reps }}</span></div>
+                <div v-if="activeMode === 'BUILDER' && !isResting" class="mt-4 text-white font-teko text-3xl opacity-60 uppercase">{{ currentEx.name }} <span class="text-[#E2FF3B]" v-if="currentEx.reps">x{{ currentEx.reps }}</span></div>
             </div>
 
             <div class="text-[170px] font-teko font-bold leading-none tabular-nums tracking-tighter" :class="isResting ? 'text-cyan-400' : 'text-white'">{{ formatTime(timer) }}</div>
 
             <div class="w-full space-y-6">
                 <button v-if="activeMode === 'AMRAP'" @click="addRound" :class="cooldown ? 'opacity-30 scale-95 bg-red-500' : ''" class="btn-amrap-flat w-full py-12 shadow-2xl transition-all">{{ rounds }}</button>
-                <button v-else @click="nextStep" class="w-full bg-white text-black py-8 rounded-[40px] font-black text-4xl uppercase italic active:scale-95">
+                <button v-else @click="nextStep" class="w-full bg-white text-black py-8 rounded-[40px] font-black text-4xl uppercase italic active:scale-95 transition-all">
                     {{ isResting ? 'SALTAR' : 'LISTO' }}
                 </button>
                 <button @click="stopWorkout" class="w-full text-white/20 font-black uppercase text-[10px] tracking-[0.5em] py-2">Finalizar</button>
             </div>
         </div>
 
-        <div v-else-if="screen === 'summary'" class="p-8 pt-24 text-center animate-in zoom-in duration-500 h-screen flex flex-col justify-between">
+        <div v-else-if="screen === 'summary'" class="p-8 pt-24 text-center h-screen flex flex-col justify-between">
             <div>
-                <i class="fas fa-check-circle text-8xl text-[#E2FF3B] mb-8 animate-bounce"></i>
-                <h1 class="text-6xl font-teko font-bold uppercase italic tracking-tighter mb-4">¡SESIÓN COMPLETADA!</h1>
-                <p class="text-gray-500 font-bold uppercase text-[10px] tracking-[0.4em] mb-12">Buen trabajo, guerrero.</p>
+                <i class="fas fa-check-circle text-8xl text-[#E2FF3B] mb-8 animate-pulse"></i>
+                <h1 class="text-6xl font-teko font-bold uppercase italic tracking-tighter mb-4">¡TERMINADO!</h1>
+                <p class="text-gray-500 font-bold uppercase text-[10px] tracking-[0.4em] mb-12">Sesión completada con éxito</p>
 
                 <div class="card-workout p-8 space-y-6">
                     <div v-if="activeMode === 'AMRAP'">
-                        <p class="text-[10px] text-gray-500 font-black uppercase mb-1">Rondas Totales</p>
-                        <h2 class="text-7xl font-teko font-bold text-[#E2FF3B] italic leading-none">{{ rounds }}</h2>
+                        <p class="text-[10px] text-gray-500 font-black uppercase mb-1">Resultado Final</p>
+                        <h2 class="text-7xl font-teko font-bold text-[#E2FF3B] italic leading-none">{{ rounds }} <span class="text-2xl">RD</span></h2>
                     </div>
                     <div v-if="activeMode === 'FOR TIME'">
-                        <p class="text-[10px] text-gray-500 font-black uppercase mb-1">Tiempo Final</p>
+                        <p class="text-[10px] text-gray-500 font-black uppercase mb-1">Tiempo Total</p>
                         <h2 class="text-7xl font-teko font-bold text-[#E2FF3B] italic leading-none">{{ formatTime(finalTime) }}</h2>
                     </div>
                     <div v-if="activeMode === 'EMOM' || activeMode === 'TABATA'">
-                        <p class="text-[10px] text-gray-500 font-black uppercase mb-1">Volumen Total</p>
-                        <h2 class="text-7xl font-teko font-bold text-[#E2FF3B] italic leading-none">{{ quickRounds }} <span class="text-3xl">RONDAS</span></h2>
+                        <p class="text-[10px] text-gray-500 font-black uppercase mb-1">Volumen</p>
+                        <h2 class="text-7xl font-teko font-bold text-[#E2FF3B] italic leading-none">{{ quickRounds }} <span class="text-2xl">RD</span></h2>
                     </div>
                     <div v-if="activeMode === 'BUILDER'">
-                        <p class="text-[10px] text-gray-500 font-black uppercase mb-1">{{ routine.name }}</p>
-                        <h2 class="text-6xl font-teko font-bold text-[#E2FF3B] italic leading-none">{{ routine.series }} <span class="text-2xl">SERIES</span></h2>
-                        <p class="text-xs font-bold text-gray-600 mt-2">{{ routine.exercises.length }} Ejercicios realizados</p>
+                        <p class="text-[10px] text-gray-500 font-black uppercase mb-1 italic">{{ routine.name }}</p>
+                        <h2 class="text-6xl font-teko font-bold text-[#E2FF3B] italic leading-none">{{ routine.series }} <span class="text-2xl italic">SERIES</span></h2>
                     </div>
                 </div>
             </div>
-
-            <button @click="screen = 'menu'" class="btn-accent w-full py-6 text-3xl font-teko italic uppercase tracking-widest mb-10 shadow-2xl">Volver al Inicio</button>
+            <button @click="screen = 'menu'" class="btn-accent w-full py-6 text-3xl font-teko italic uppercase tracking-widest mb-10 shadow-lg">Volver al Inicio</button>
         </div>
 
     </div>
@@ -203,7 +220,7 @@
                 }
             },
             mounted() {
-                const saved = localStorage.getItem('box_workouts_v5');
+                const saved = localStorage.getItem('box_workouts_v6');
                 if(saved) this.savedWorkouts = JSON.parse(saved);
             },
             methods: {
@@ -214,10 +231,10 @@
                     if(!this.routine.name) this.routine.name = "ENTRENO " + (this.savedWorkouts.length + 1);
                     this.savedWorkouts = this.savedWorkouts.filter(w => w.id !== this.routine.id);
                     this.savedWorkouts.unshift({...this.routine});
-                    localStorage.setItem('box_workouts_v5', JSON.stringify(this.savedWorkouts));
+                    localStorage.setItem('box_workouts_v6', JSON.stringify(this.savedWorkouts));
                     this.startSavedWorkout(this.routine);
                 },
-                deleteWorkout(id) { this.savedWorkouts = this.savedWorkouts.filter(w => w.id !== id); localStorage.setItem('box_workouts_v5', JSON.stringify(this.savedWorkouts)); },
+                deleteWorkout(id) { this.savedWorkouts = this.savedWorkouts.filter(w => w.id !== id); localStorage.setItem('box_workouts_v6', JSON.stringify(this.savedWorkouts)); },
                 openQuick(mode) { this.activeMode = mode; this.screen = 'quick_config'; },
                 startSavedWorkout(w) { this.routine = w; this.activeMode = 'BUILDER'; this.preStart(); },
                 preStart() {
@@ -243,9 +260,9 @@
                         if(isDown) { if(this.timer > 0) this.timer--; else this.nextStep(); }
                         else this.timer++;
                         
-                        // Capturar tiempo para For Time Up
-                        if(this.activeMode === 'FOR TIME' && this.forTimeType === 'up') this.finalTime = this.timer;
-                        else if(this.activeMode === 'FOR TIME' && this.forTimeType === 'down') this.finalTime = (this.quickDuration * 60) - this.timer;
+                        if(this.activeMode === 'FOR TIME') {
+                            this.finalTime = (this.forTimeType === 'up') ? this.timer : (this.quickDuration * 60) - this.timer;
+                        }
                     }, 1000);
                 },
                 nextStep() {
