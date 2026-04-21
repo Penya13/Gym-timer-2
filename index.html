@@ -8,7 +8,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BOXTIMER">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%230A0A0C%22/><text y=%2250%%22 x=%2250%%22 font-family=%22Teko, sans-serif%22 font-weight=%22bold%22 font-size=%2240%22 text-anchor=%22middle%22 fill=%22%23E2FF3B%22 dy=%22.35em%22 font-style=%22italic%22>BOX</text></svg>">
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230A0A0C%22/><text y=%2250%%22 x=%2250%%22 font-family=%22Arial Black, sans-serif%22 font-weight=%22900%22 font-size=%2235%22 text-anchor=%22middle%22 fill=%22%23E2FF3B%22 dy=%22.35em%22 font-style=%22italic%22>BOX</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%230A0A0C%22/><text y=%2250%%22 x=%2250%%22 font-family=%22Arial Black, sans-serif%22 font-weight=%22900%22 font-size=%2235%22 text-anchor=%22middle%22 fill=%22%23E2FF3B%22 dy=%22.35em%22 font-style=%22italic%22>BOX</text></svg>">
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -19,22 +21,14 @@
         :root { --accent: #E2FF3B; --bg: #0A0A0C; --card: #16161E; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
         .font-teko { font-family: 'Teko', sans-serif; }
-        
         .card-workout { background: var(--card); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .btn-accent { background: var(--accent); color: black; font-weight: 900; border-radius: 14px; transition: all 0.2s; }
         .btn-accent:active { transform: scale(0.96); }
-        
         .input-xl { background: #000; border: 1px solid #2D2D3A; border-radius: 14px; padding: 16px; font-size: 1.1rem; font-weight: 700; outline: none; width: 100%; color: white; }
-        
         .btn-amrap-flat { background: var(--accent); color: black; border-radius: 40px; font-weight: 900; font-size: 6rem; line-height: 1; border: none; }
-        
         .countdown-overlay { background: rgba(0,0,0,0.95); backdrop-filter: blur(15px); z-index: 100; }
-        
         select { appearance: none; background: transparent; text-align-last: center; color: var(--accent); font-weight: 800; border: none; outline: none; cursor: pointer; }
         option { background: #16161E; color: white; }
-        
-        .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
-        .fade-enter-from, .fade-leave-to { opacity: 0; }
     </style>
 </head>
 <body>
@@ -45,8 +39,8 @@
             <div class="text-[200px] font-teko font-bold leading-none text-white">{{ countdownTimer }}</div>
         </div>
 
-        <div v-if="screen === 'menu'" class="p-6 pt-12">
-            <h1 class="text-6xl font-teko font-bold tracking-tighter uppercase mb-10 text-center italic">BOX<span class="text-[#E2FF3B]">TIMER</span></h1>
+        <div v-if="screen === 'menu'" class="p-6 pt-12 animate-in fade-in">
+            <h1 class="text-6xl font-teko font-bold tracking-tighter uppercase leading-none mb-10 text-center italic">BOX<span class="text-[#E2FF3B]">TIMER</span></h1>
             <button @click="openBuilder()" class="btn-accent w-full py-5 mb-8 text-2xl font-teko uppercase italic tracking-wider shadow-lg">+ Nuevo Entreno</button>
 
             <div class="grid grid-cols-2 gap-4 mb-12">
@@ -86,28 +80,28 @@
             </div>
 
             <div class="space-y-6">
-                <div v-if="activeMode === 'FOR TIME'" class="flex bg-card p-1.5 rounded-2xl">
+                <div v-if="activeMode === 'FOR TIME'" class="flex bg-card p-1.5 rounded-2xl mb-4">
                     <button @click="forTimeType = 'up'" :class="forTimeType === 'up' ? 'btn-accent' : 'text-gray-500'" class="flex-1 py-4 rounded-xl font-bold text-xs uppercase text-center">Crono Up</button>
                     <button @click="forTimeType = 'down'" :class="forTimeType === 'down' ? 'btn-accent' : 'text-gray-500'" class="flex-1 py-4 rounded-xl font-bold text-xs uppercase text-center">Time Cap</button>
                 </div>
 
                 <div class="card-workout p-10 text-center">
                     <div v-if="activeMode === 'AMRAP' || (activeMode === 'FOR TIME' && forTimeType === 'down')">
-                        <label class="text-[10px] font-black text-gray-500 uppercase block mb-4 text-center">Minutos</label>
+                        <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-4 text-center">Minutos totales</label>
                         <select v-model="quickDuration" class="text-8xl font-teko">
                             <option v-for="n in 60" :key="n" :value="n">{{ n }}</option>
                         </select>
                     </div>
                     <div v-if="activeMode === 'EMOM'" class="space-y-10">
-                        <div><label class="text-[10px] font-black text-gray-500 uppercase block mb-4 text-center">Intervalo</label><select v-model="emomInterval" class="text-6xl font-teko"><option v-for="opt in emomOptions" :value="opt.val">{{ opt.label }}</option></select></div>
-                        <div><label class="text-[10px] font-black text-gray-500 uppercase block mb-4 text-center">Rondas totales</label><select v-model="quickRounds" class="text-6xl font-teko"><option v-for="n in 50" :value="n">{{ n }}</option></select></div>
+                        <div><label class="text-[10px] font-black text-gray-500 uppercase block mb-4 text-center">Cada</label><select v-model="emomInterval" class="text-6xl font-teko"><option v-for="opt in emomOptions" :value="opt.val">{{ opt.label }}</option></select></div>
+                        <div><label class="text-[10px] font-black text-gray-500 uppercase block mb-4 text-center">Rondas</label><select v-model="quickRounds" class="text-6xl font-teko"><option v-for="n in 50" :value="n">{{ n }}</option></select></div>
                     </div>
                     <div v-if="activeMode === 'TABATA'" class="space-y-8">
                         <div class="grid grid-cols-2 gap-4">
-                            <div><p class="text-[10px] text-gray-500 mb-2 uppercase">Work (s)</p><select v-model.number="tabataWork" class="text-5xl font-teko"><option v-for="s in [10,15,20,30,40,45,60]" :value="s">{{s}}</option></select></div>
-                            <div><p class="text-[10px] text-cyan-500 mb-2 uppercase">Rest (s)</p><select v-model.number="tabataRest" class="text-5xl font-teko text-cyan-400"><option v-for="s in [0,5,10,15,20,30]" :value="s">{{s}}</option></select></div>
+                            <div><p class="text-[10px] text-gray-500 mb-2 uppercase">WORK (S)</p><select v-model.number="tabataWork" class="text-5xl font-teko"><option v-for="s in [10,15,20,30,40,45,60]" :value="s">{{s}}</option></select></div>
+                            <div><p class="text-[10px] text-cyan-500 mb-2 uppercase">REST (S)</p><select v-model.number="tabataRest" class="text-5xl font-teko text-cyan-400"><option v-for="s in [0,5,10,15,20,30]" :value="s">{{s}}</option></select></div>
                         </div>
-                        <div class="pt-6 border-t border-white/5"><p class="text-[10px] text-gray-500 mb-2 uppercase">Rondas totales</p><select v-model="quickRounds" class="text-6xl font-teko"><option v-for="n in [4,8,12,16,20,24,30,40]" :value="n">{{n}}</option></select></div>
+                        <div class="pt-6 border-t border-white/5 text-center"><p class="text-[10px] text-gray-500 mb-2 uppercase">Rondas</p><select v-model="quickRounds" class="text-6xl font-teko"><option v-for="n in [4,8,12,16,20,24,30,40]" :value="n">{{n}}</option></select></div>
                     </div>
                 </div>
             </div>
@@ -117,18 +111,14 @@
         <div v-else-if="screen === 'builder'" class="p-6 pt-10 pb-40">
             <div class="flex items-center mb-10">
                 <button @click="screen = 'menu'"><i class="fas fa-chevron-left text-2xl"></i></button>
-                <h1 class="flex-1 text-center font-teko text-4xl uppercase italic tracking-widest">Editor</h1>
+                <h1 class="flex-1 text-center font-teko text-4xl uppercase italic tracking-widest text-center">Editor</h1>
             </div>
             <div class="card-workout p-8 mb-8">
                 <label class="text-[10px] font-black text-gray-500 uppercase mb-3 block">Nombre</label>
                 <input v-model="routine.name" placeholder="STRENGTH..." class="bg-transparent text-4xl font-teko font-bold border-b border-white/10 w-full mb-8 outline-none uppercase text-center">
                 <div class="flex items-center justify-between bg-black/40 p-5 rounded-2xl">
                     <span class="font-bold text-sm">SERIES</span>
-                    <div class="flex items-center gap-6">
-                        <button @click="routine.series > 1 ? routine.series-- : 1" class="text-2xl">-</button>
-                        <span class="text-4xl font-teko text-[#E2FF3B]">{{ routine.series }}</span>
-                        <button @click="routine.series++" class="text-2xl">+</button>
-                    </div>
+                    <div class="flex items-center gap-6"><button @click="routine.series > 1 ? routine.series-- : 1" class="text-2xl">-</button><span class="text-4xl font-teko text-[#E2FF3B]">{{ routine.series }}</span><button @click="routine.series++" class="text-2xl">+</button></div>
                 </div>
             </div>
             <div v-for="(ex, index) in routine.exercises" :key="ex.id" class="card-workout p-8 mb-6 border-l-8 border-[#E2FF3B]">
@@ -149,7 +139,7 @@
         <div v-else-if="screen === 'play'" :class="isResting ? 'bg-[#000F1A]' : ''" class="h-screen fixed inset-0 z-50 flex flex-col items-center justify-between p-12 py-24 bg-black transition-colors duration-500">
             <div class="text-center w-full">
                 <span class="bg-white/5 px-5 py-1.5 rounded-full text-[10px] font-black uppercase text-gray-500 tracking-[0.4em] mb-8 italic">{{ activeMode }}</span>
-                <h2 class="text-6xl font-teko font-bold uppercase italic tracking-tight mb-2">{{ isResting ? 'Descanso' : (activeMode === 'BUILDER' ? routine.name : activeMode) }}</h2>
+                <h2 class="text-6xl font-teko font-bold uppercase italic tracking-tight mb-2 leading-none">{{ isResting ? 'Descanso' : (activeMode === 'BUILDER' ? routine.name : activeMode) }}</h2>
                 
                 <div class="text-[#E2FF3B] font-teko text-3xl italic uppercase tracking-widest mt-2">
                     <span v-if="activeMode === 'BUILDER'">Serie {{ currentRound }} / {{ routine.series }} <span class="opacity-30 ml-2 text-white italic">| Ex {{ currentExIdx + 1 }} / {{ routine.exercises.length }}</span></span>
@@ -170,15 +160,15 @@
             </div>
         </div>
 
-        <div v-else-if="screen === 'summary'" class="p-8 pt-24 text-center h-screen flex flex-col justify-between">
+        <div v-else-if="screen === 'summary'" class="p-8 pt-24 text-center h-screen flex flex-col justify-between animate-in zoom-in">
             <div>
-                <i class="fas fa-check-circle text-8xl text-[#E2FF3B] mb-8 animate-pulse"></i>
+                <i class="fas fa-check-circle text-8xl text-[#E2FF3B] mb-8"></i>
                 <h1 class="text-6xl font-teko font-bold uppercase italic tracking-tighter mb-4">¡TERMINADO!</h1>
-                <p class="text-gray-500 font-bold uppercase text-[10px] tracking-[0.4em] mb-12">Sesión completada con éxito</p>
+                <p class="text-gray-500 font-bold uppercase text-[10px] tracking-[0.4em] mb-12 italic">Buen trabajo</p>
 
                 <div class="card-workout p-8 space-y-6">
                     <div v-if="activeMode === 'AMRAP'">
-                        <p class="text-[10px] text-gray-500 font-black uppercase mb-1">Resultado Final</p>
+                        <p class="text-[10px] text-gray-500 font-black uppercase mb-1">Rondas Totales</p>
                         <h2 class="text-7xl font-teko font-bold text-[#E2FF3B] italic leading-none">{{ rounds }} <span class="text-2xl">RD</span></h2>
                     </div>
                     <div v-if="activeMode === 'FOR TIME'">
@@ -220,7 +210,7 @@
                 }
             },
             mounted() {
-                const saved = localStorage.getItem('box_workouts_v6');
+                const saved = localStorage.getItem('box_workouts_v7');
                 if(saved) this.savedWorkouts = JSON.parse(saved);
             },
             methods: {
@@ -231,10 +221,10 @@
                     if(!this.routine.name) this.routine.name = "ENTRENO " + (this.savedWorkouts.length + 1);
                     this.savedWorkouts = this.savedWorkouts.filter(w => w.id !== this.routine.id);
                     this.savedWorkouts.unshift({...this.routine});
-                    localStorage.setItem('box_workouts_v6', JSON.stringify(this.savedWorkouts));
+                    localStorage.setItem('box_workouts_v7', JSON.stringify(this.savedWorkouts));
                     this.startSavedWorkout(this.routine);
                 },
-                deleteWorkout(id) { this.savedWorkouts = this.savedWorkouts.filter(w => w.id !== id); localStorage.setItem('box_workouts_v6', JSON.stringify(this.savedWorkouts)); },
+                deleteWorkout(id) { this.savedWorkouts = this.savedWorkouts.filter(w => w.id !== id); localStorage.setItem('box_workouts_v7', JSON.stringify(this.savedWorkouts)); },
                 openQuick(mode) { this.activeMode = mode; this.screen = 'quick_config'; },
                 startSavedWorkout(w) { this.routine = w; this.activeMode = 'BUILDER'; this.preStart(); },
                 preStart() {
