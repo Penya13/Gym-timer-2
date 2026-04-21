@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BOXTIMER">
     
-    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAAC6R98uAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAL1SURBVHgB7d0/axRRFMDxtwSBBIfA4SByAtgcAnuCSuBInIAsuUnuAjkChyAQJNv9pZpOf8lkunv6vV9S079eb96reupf6vV6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X6/V6vV6v1+v1er1er9fr9Xq9Xq/X+ye9Atv9W33BvP2tAAAAAElFTkSuQmCC?v=2">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'><rect width='180' height='180' fill='%230A0A0C'/><text x='50%25' y='54%25' font-family='Arial Black, sans-serif' font-weight='900' font-size='60' fill='%23E2FF3B' text-anchor='middle' font-style='italic'>BOX</text></svg>">
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -209,7 +209,7 @@
                 }
             },
             mounted() {
-                const saved = localStorage.getItem('box_workouts_v9');
+                const saved = localStorage.getItem('box_workouts_final_v1');
                 if(saved) this.savedWorkouts = JSON.parse(saved);
             },
             methods: {
@@ -220,10 +220,10 @@
                     if(!this.routine.name) this.routine.name = "ENTRENO " + (this.savedWorkouts.length + 1);
                     this.savedWorkouts = this.savedWorkouts.filter(w => w.id !== this.routine.id);
                     this.savedWorkouts.unshift({...this.routine});
-                    localStorage.setItem('box_workouts_v9', JSON.stringify(this.savedWorkouts));
+                    localStorage.setItem('box_workouts_final_v1', JSON.stringify(this.savedWorkouts));
                     this.startSavedWorkout(this.routine);
                 },
-                deleteWorkout(id) { this.savedWorkouts = this.savedWorkouts.filter(w => w.id !== id); localStorage.setItem('box_workouts_v9', JSON.stringify(this.savedWorkouts)); },
+                deleteWorkout(id) { this.savedWorkouts = this.savedWorkouts.filter(w => w.id !== id); localStorage.setItem('box_workouts_final_v1', JSON.stringify(this.savedWorkouts)); },
                 openQuick(mode) { this.activeMode = mode; this.screen = 'quick_config'; },
                 startSavedWorkout(w) { this.routine = w; this.activeMode = 'BUILDER'; this.preStart(); },
                 preStart() {
