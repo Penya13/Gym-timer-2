@@ -13,29 +13,27 @@
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; -webkit-tap-highlight-color: transparent; }
         .font-teko { font-family: 'Teko', sans-serif; }
         
-        /* Estética Refinada */
         .card-workout { background: var(--card); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .btn-accent { background: var(--accent); color: black; font-weight: 900; border-radius: 14px; transition: all 0.2s; }
         .btn-accent:active { transform: scale(0.96); }
         
-        .input-xl { background: #000; border: 1px solid #2D2D3A; border-radius: 14px; padding: 16px; font-size: 1.1rem; font-weight: 700; outline: none; width: 100%; }
+        .input-xl { background: #000; border: 1px solid #2D2D3A; border-radius: 14px; padding: 16px; font-size: 1.1rem; font-weight: 700; outline: none; width: 100%; color: white; }
         .input-xl:focus { border-color: var(--accent); }
 
-        /* Botón AMRAP Plano Masivo */
-        .btn-amrap-flat { background: var(--accent); color: black; border-radius: 40px; font-weight: 900; font-size: 6rem; line-height: 1; transition: background 0.1s; border: none; }
+        .btn-amrap-flat { background: var(--accent); color: black; border-radius: 40px; font-weight: 900; font-size: 6rem; line-height: 1; border: none; }
         
-        .countdown-overlay { background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); z-index: 100; }
+        .countdown-overlay { background: rgba(0,0,0,0.95); backdrop-filter: blur(15px); z-index: 100; }
         
-        select { appearance: none; background: transparent; text-align-last: center; color: var(--accent); font-weight: 800; border: none; outline: none; }
+        select { appearance: none; background: transparent; text-align-last: center; color: var(--accent); font-weight: 800; border: none; outline: none; cursor: pointer; }
         option { background: #16161E; color: white; }
     </style>
 </head>
 <body>
     <div id="app" class="max-w-md mx-auto min-h-screen flex flex-col">
 
-        <div v-if="isCountingDown" class="fixed inset-0 countdown-overlay flex flex-col items-center justify-center animate-in fade-in">
-            <p class="text-[#E2FF3B] font-teko text-2xl uppercase tracking-[0.5em] mb-4">Prepárate</p>
-            <div class="text-[180px] font-teko font-bold leading-none text-white">{{ countdownTimer }}</div>
+        <div v-if="isCountingDown" class="fixed inset-0 countdown-overlay flex flex-col items-center justify-center animate-in fade-in duration-300">
+            <p class="text-[#E2FF3B] font-teko text-3xl uppercase tracking-[0.5em] mb-4">Prepárate</p>
+            <div class="text-[200px] font-teko font-bold leading-none text-white animate-pulse">{{ countdownTimer }}</div>
         </div>
 
         <div v-if="screen === 'menu'" class="p-6 pt-12 animate-in fade-in">
@@ -43,26 +41,26 @@
                 <h1 class="text-6xl font-teko font-bold tracking-tighter uppercase leading-none">BOX<span class="text-[#E2FF3B]">TIMER</span></h1>
             </div>
 
-            <button @click="openBuilder()" class="btn-accent w-full py-5 mb-8 text-2xl font-teko uppercase italic tracking-wider italic">
+            <button @click="openBuilder()" class="btn-accent w-full py-5 mb-8 text-2xl font-teko uppercase italic tracking-wider">
                 + Nuevo Entreno
             </button>
 
             <div class="grid grid-cols-2 gap-4 mb-12">
-                <div @click="openQuick('AMRAP', '#D97706')" class="bg-card h-32 flex flex-col items-center justify-center rounded-[30px] border border-orange-500/20">
+                <div @click="openQuick('AMRAP')" class="bg-card h-32 flex flex-col items-center justify-center rounded-[30px] border border-orange-500/20 active:scale-95 transition-transform">
                     <span class="text-orange-500 text-3xl font-teko tracking-widest uppercase">AMRAP</span>
                 </div>
-                <div @click="openQuick('FOR TIME', '#4F46E5')" class="bg-card h-32 flex flex-col items-center justify-center rounded-[30px] border border-indigo-500/20">
+                <div @click="openQuick('FOR TIME')" class="bg-card h-32 flex flex-col items-center justify-center rounded-[30px] border border-indigo-500/20 active:scale-95 transition-transform">
                     <span class="text-indigo-400 text-3xl font-teko tracking-widest uppercase">For Time</span>
                 </div>
-                <div @click="openQuick('EMOM', '#9333EA')" class="bg-card h-32 flex flex-col items-center justify-center rounded-[30px] border border-purple-500/20">
+                <div @click="openQuick('EMOM')" class="bg-card h-32 flex flex-col items-center justify-center rounded-[30px] border border-purple-500/20 active:scale-95 transition-transform">
                     <span class="text-purple-400 text-3xl font-teko tracking-widest uppercase">EMOM</span>
                 </div>
-                <div @click="openQuick('TABATA', '#10B981')" class="bg-card h-32 flex flex-col items-center justify-center rounded-[30px] border border-emerald-500/20">
+                <div @click="openQuick('TABATA')" class="bg-card h-32 flex flex-col items-center justify-center rounded-[30px] border border-emerald-500/20 active:scale-95 transition-transform">
                     <span class="text-emerald-400 text-3xl font-teko tracking-widest uppercase">Tabata</span>
                 </div>
             </div>
 
-            <h2 v-if="savedWorkouts.length" class="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em] mb-4">Tus Rutinas</h2>
+            <h2 v-if="savedWorkouts.length" class="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em] mb-4 px-1">Tus Rutinas</h2>
             <div class="space-y-4">
                 <div v-for="w in savedWorkouts" :key="w.id" class="card-workout p-6 flex items-center justify-between">
                     <div>
@@ -71,24 +69,77 @@
                     </div>
                     <div class="flex gap-3">
                         <button @click="deleteWorkout(w.id)" class="w-12 h-12 rounded-full bg-white/5 text-red-500/30 flex items-center justify-center"><i class="fas fa-trash-alt"></i></button>
-                        <button @click="startWorkout(w)" class="w-14 h-14 rounded-2xl bg-[#E2FF3B] text-black flex items-center justify-center text-xl shadow-lg"><i class="fas fa-play"></i></button>
+                        <button @click="startSavedWorkout(w)" class="w-14 h-14 rounded-2xl bg-[#E2FF3B] text-black flex items-center justify-center text-xl shadow-lg"><i class="fas fa-play"></i></button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div v-else-if="screen === 'builder'" class="p-6 pt-10 pb-40 animate-in slide-in-from-bottom">
+        <div v-else-if="screen === 'quick_config'" class="p-6 pt-10 animate-in slide-in-from-bottom">
             <div class="flex items-center mb-10">
                 <button @click="screen = 'menu'"><i class="fas fa-chevron-left text-2xl"></i></button>
-                <h1 class="flex-1 text-center font-teko text-4xl uppercase italic tracking-widest">Editor</h1>
+                <h1 class="flex-1 text-center font-teko text-5xl uppercase italic tracking-widest text-[#E2FF3B]">{{ activeMode }}</h1>
+            </div>
+
+            <div class="space-y-6">
+                <div v-if="activeMode === 'FOR TIME'" class="flex bg-card p-1.5 rounded-2xl mb-4">
+                    <button @click="forTimeType = 'up'" :class="forTimeType === 'up' ? 'btn-accent' : 'text-gray-500'" class="flex-1 py-4 rounded-xl font-bold text-xs uppercase">Crono Up</button>
+                    <button @click="forTimeType = 'down'" :class="forTimeType === 'down' ? 'btn-accent' : 'text-gray-500'" class="flex-1 py-4 rounded-xl font-bold text-xs uppercase">Time Cap</button>
+                </div>
+
+                <div class="card-workout p-10 text-center">
+                    <div v-if="activeMode === 'AMRAP' || (activeMode === 'FOR TIME' && forTimeType === 'down')">
+                        <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-4">Minutos totales</label>
+                        <select v-model="quickDuration" class="text-8xl font-teko">
+                            <option v-for="n in 60" :value="n">{{ n }}</option>
+                        </select>
+                    </div>
+
+                    <div v-if="activeMode === 'EMOM'" class="space-y-10">
+                        <div>
+                            <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-4 text-center">Cada (Intervalo)</label>
+                            <select v-model="emomInterval" class="text-6xl font-teko">
+                                <option v-for="opt in emomOptions" :value="opt.val">{{ opt.label }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-4 text-center">Rondas totales</label>
+                            <select v-model="quickRounds" class="text-6xl font-teko">
+                                <option v-for="n in 30" :value="n">{{ n }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div v-if="activeMode === 'TABATA'" class="space-y-8">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><p class="text-[10px] text-gray-500 mb-2">WORK</p><select v-model="tabataWork" class="text-5xl font-teko">{{ tabataWork }}s</select></div>
+                            <div><p class="text-[10px] text-cyan-500 mb-2">REST</p><select v-model="tabataRest" class="text-5xl font-teko text-cyan-400">{{ tabataRest }}s</select></div>
+                        </div>
+                        <div class="pt-6 border-t border-white/5">
+                            <p class="text-[10px] text-gray-500 mb-2">RONDAS</p>
+                            <select v-model="quickRounds" class="text-6xl font-teko">{{ quickRounds }}</select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button @click="preStart" class="btn-accent w-full py-6 mt-10 text-3xl font-teko tracking-widest uppercase italic shadow-2xl">
+                Comenzar
+            </button>
+        </div>
+
+        <div v-else-if="screen === 'builder'" class="p-6 pt-10 pb-40">
+            <div class="flex items-center mb-10">
+                <button @click="screen = 'menu'"><i class="fas fa-chevron-left text-2xl"></i></button>
+                <h1 class="flex-1 text-center font-teko text-4xl uppercase italic tracking-widest">Builder</h1>
             </div>
 
             <div class="card-workout p-8 mb-8">
                 <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-3">Nombre</label>
-                <input v-model="routine.name" placeholder="PUESTA A PUNTO..." class="bg-transparent text-4xl font-teko font-bold border-b border-white/10 w-full mb-8 outline-none uppercase">
+                <input v-model="routine.name" placeholder="ENTRENO FUERZA..." class="bg-transparent text-4xl font-teko font-bold border-b border-white/10 w-full mb-8 outline-none uppercase">
                 
                 <div class="flex items-center justify-between bg-black/40 p-5 rounded-2xl">
-                    <span class="font-bold text-sm">SERIES TOTALES</span>
+                    <span class="font-bold text-sm tracking-tight">SERIES TOTALES</span>
                     <div class="flex items-center gap-6">
                         <button @click="routine.series > 1 ? routine.series-- : 1" class="text-2xl opacity-50 px-2">-</button>
                         <span class="text-3xl font-teko font-bold text-[#E2FF3B]">{{ routine.series }}</span>
@@ -97,58 +148,33 @@
                 </div>
             </div>
 
-            <div v-for="(ex, index) in routine.exercises" :key="ex.id" class="card-workout p-8 mb-6 relative border-l-8 border-[#E2FF3B]">
+            <div v-for="(ex, index) in routine.exercises" :key="ex.id" class="card-workout p-8 mb-6 border-l-8 border-[#E2FF3B]">
                 <div class="flex items-center gap-4 mb-8">
                     <div class="text-4xl font-teko font-bold italic opacity-20">{{ index + 1 }}</div>
-                    <input v-model="ex.name" placeholder="¿Qué ejercicio?" class="input-xl uppercase">
+                    <input v-model="ex.name" placeholder="Ejercicio..." class="input-xl uppercase">
                     <button @click="removeExercise(index)" class="text-red-500/20 text-2xl">×</button>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4 mb-8">
-                    <div>
-                        <label class="text-[9px] font-black text-gray-500 uppercase mb-2 block">Repeticiones</label>
-                        <input v-model="ex.reps" type="number" placeholder="10" class="input-xl text-center">
-                    </div>
-                    <div>
-                        <label class="text-[9px] font-black text-gray-500 uppercase mb-2 block">Trabajo</label>
-                        <select v-model="ex.workMode" class="input-xl text-xs">
-                            <option value="libre">LIBRE</option>
-                            <option value="tiempo">TIEMPO</option>
-                        </select>
-                    </div>
+                    <div><label class="text-[9px] font-black text-gray-500 mb-2 block">Reps</label><input v-model="ex.reps" type="number" class="input-xl text-center"></div>
+                    <div><label class="text-[9px] font-black text-gray-500 mb-2 block">Modo</label><select v-model="ex.workMode" class="input-xl text-xs"><option value="libre">LIBRE</option><option value="tiempo">TIEMPO</option></select></div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
-                    <div v-if="ex.workMode === 'tiempo'">
-                        <label class="text-[9px] font-black text-gray-500 uppercase mb-2 block">Segundos</label>
-                        <select v-model="ex.workSeconds" class="input-xl text-center">
-                            <option v-for="t in [15,20,30,40,45,60,90,120]" :value="t">{{ t }}s</option>
-                        </select>
-                    </div>
-                    <div :class="ex.workMode === 'libre' ? 'col-span-2' : ''">
-                        <label class="text-[9px] font-black text-gray-500 uppercase mb-2 block">Descanso</label>
-                        <select v-model="ex.restTime" class="input-xl text-cyan-400">
-                            <option v-for="t in [0,10,15,20,30,45,60,90,120,180]" :value="t">{{ t }}s</option>
-                        </select>
-                    </div>
+                    <div v-if="ex.workMode === 'tiempo'"><label class="text-[9px] font-black text-gray-500 mb-2 block">Segundos</label><select v-model="ex.workSeconds" class="input-xl text-center"><option v-for="t in [15,30,45,60,90,120]" :value="t">{{ t }}s</option></select></div>
+                    <div :class="ex.workMode === 'libre' ? 'col-span-2' : ''"><label class="text-[9px] font-black text-gray-500 mb-2 block">Descanso</label><select v-model="ex.restTime" class="input-xl text-cyan-400"><option v-for="t in [0,15,30,45,60,90,120]" :value="t">{{ t }}s</option></select></div>
                 </div>
             </div>
 
-            <button @click="addExercise" class="w-full py-5 border-2 border-dashed border-white/5 rounded-3xl text-gray-600 font-bold uppercase text-xs tracking-widest mb-12">
-                + Añadir Ejercicio
-            </button>
-
-            <div class="fixed bottom-0 left-0 right-0 p-8 bg-black/80 backdrop-blur-xl flex gap-4">
-                <button @click="screen = 'menu'" class="flex-1 py-5 rounded-2xl bg-white/5 font-bold uppercase text-[10px] tracking-widest text-gray-500">Cancelar</button>
-                <button @click="saveAndStart" class="flex-[2] btn-accent py-5 text-2xl font-teko italic uppercase tracking-widest">Guardar ✓</button>
-            </div>
+            <button @click="addExercise" class="w-full py-5 border-2 border-dashed border-white/5 rounded-3xl text-gray-600 font-bold uppercase text-xs tracking-widest mb-12">+ Añadir</button>
+            <button @click="saveAndStart" class="btn-accent fixed bottom-8 left-6 right-6 py-6 text-3xl font-teko italic uppercase tracking-widest shadow-2xl">Guardar ✓</button>
         </div>
 
-        <div v-else-if="screen === 'play'" :class="isResting ? 'bg-[#000F1A]' : ''" class="h-screen fixed inset-0 z-50 flex flex-col items-center justify-between p-12 py-24 transition-colors duration-700 bg-black">
+        <div v-else-if="screen === 'play'" :class="isResting ? 'bg-[#000F1A]' : ''" class="h-screen fixed inset-0 z-50 flex flex-col items-center justify-between p-12 py-24 bg-black">
             <div class="text-center w-full">
-                <div class="inline-block px-5 py-1.5 rounded-full bg-white/5 text-[10px] font-black uppercase text-gray-500 tracking-[0.4em] mb-12">{{ activeMode }}</div>
-                <h2 class="text-6xl font-teko font-bold uppercase italic leading-none tracking-tight">{{ isResting ? 'Descanso' : (currentEx.name || activeMode) }}</h2>
-                <div v-if="currentEx.reps && !isResting" class="mt-4 text-[#E2FF3B] font-teko text-4xl italic tracking-widest">{{ currentEx.reps }} REPETICIONES</div>
+                <span class="bg-white/5 px-5 py-1.5 rounded-full text-[10px] font-black uppercase text-gray-500 tracking-[0.4em] mb-12">{{ activeMode }}</span>
+                <h2 class="text-6xl font-teko font-bold uppercase italic tracking-tight mb-2">{{ isResting ? 'Descanso' : (currentEx.name || activeMode) }}</h2>
+                <div v-if="currentEx.reps && !isResting" class="text-[#E2FF3B] font-teko text-4xl italic uppercase">x{{ currentEx.reps }} reps</div>
             </div>
 
             <div class="text-[170px] font-teko font-bold leading-none tabular-nums tracking-tighter" :class="isResting ? 'text-cyan-400' : 'text-white'">
@@ -156,13 +182,11 @@
             </div>
 
             <div class="w-full space-y-6">
-                <button v-if="activeMode === 'AMRAP'" @click="addRound" :class="cooldown ? 'bg-red-500 opacity-50 scale-95' : ''" class="btn-amrap-flat w-full py-12 italic shadow-2xl transition-all">
-                    {{ rounds }}
-                </button>
-                <button v-else @click="nextStep" class="w-full bg-white text-black py-8 rounded-[40px] font-black text-4xl uppercase tracking-tighter italic shadow-2xl active:scale-95 transition-all">
+                <button v-if="activeMode === 'AMRAP'" @click="addRound" :class="cooldown ? 'opacity-30 scale-95 bg-red-500' : ''" class="btn-amrap-flat w-full py-12 italic shadow-2xl transition-all">{{ rounds }}</button>
+                <button v-else @click="nextStep" class="w-full bg-white text-black py-8 rounded-[40px] font-black text-4xl uppercase tracking-tighter italic">
                     {{ isResting ? 'SALTAR' : 'LISTO' }}
                 </button>
-                <button @click="stopWorkout" class="w-full text-white/20 font-black uppercase text-[10px] tracking-[0.5em] py-2">Finalizar</button>
+                <button @click="stopWorkout" class="w-full text-white/20 font-black uppercase text-[10px] tracking-widest">Finalizar</button>
             </div>
         </div>
 
@@ -172,18 +196,23 @@
         const { createApp } = Vue;
         createApp({
             data() {
+                const emomOptions = [];
+                for(let s=15; s<=300; s+=15) {
+                    const m = Math.floor(s/60); const sc = s%60;
+                    emomOptions.push({ val: s, label: `${m}:${sc.toString().padStart(2,'0')}` });
+                }
                 return {
                     screen: 'menu', savedWorkouts: [], activeMode: '',
                     routine: { id: null, name: '', series: 3, exercises: [] },
                     isCountingDown: false, countdownTimer: 5,
                     quickDuration: 10, quickRounds: 8, forTimeType: 'up',
-                    emomInterval: 60, tabataWork: 20, tabataRest: 10,
+                    emomInterval: 60, emomOptions, tabataWork: 20, tabataRest: 10,
                     rounds: 0, cooldown: false, currentRound: 1, currentExIdx: 0,
                     isResting: false, timer: 0, interval: null
                 }
             },
             mounted() {
-                const saved = localStorage.getItem('box_workouts_v3');
+                const saved = localStorage.getItem('box_workouts_final');
                 if(saved) this.savedWorkouts = JSON.parse(saved);
             },
             methods: {
@@ -197,18 +226,18 @@
                     if(!this.routine.name) this.routine.name = "Entreno " + (this.savedWorkouts.length + 1);
                     this.savedWorkouts = this.savedWorkouts.filter(w => w.id !== this.routine.id);
                     this.savedWorkouts.unshift({...this.routine});
-                    localStorage.setItem('box_workouts_v3', JSON.stringify(this.savedWorkouts));
-                    this.startWorkout(this.routine);
+                    localStorage.setItem('box_workouts_final', JSON.stringify(this.savedWorkouts));
+                    this.startSavedWorkout(this.routine);
                 },
-                deleteWorkout(id) { this.savedWorkouts = this.savedWorkouts.filter(w => w.id !== id); localStorage.setItem('box_workouts_v3', JSON.stringify(this.savedWorkouts)); },
-                startWorkout(workout) {
-                    this.routine = workout;
-                    this.activeMode = 'MIX';
-                    this.preStart();
-                },
-                openQuick(mode, color) {
+                deleteWorkout(id) { this.savedWorkouts = this.savedWorkouts.filter(w => w.id !== id); localStorage.setItem('box_workouts_final', JSON.stringify(this.savedWorkouts)); },
+                
+                openQuick(mode) {
                     this.activeMode = mode;
-                    this.screen = 'quick_config'; // En esta versión simplificada saltamos a config rápido o play
+                    this.screen = 'quick_config';
+                },
+                startSavedWorkout(w) {
+                    this.routine = w;
+                    this.activeMode = 'MIX';
                     this.preStart();
                 },
                 preStart() {
@@ -216,19 +245,17 @@
                     this.countdownTimer = 5;
                     const cd = setInterval(() => {
                         if(this.countdownTimer > 1) this.countdownTimer--;
-                        else {
-                            clearInterval(cd);
-                            this.isCountingDown = false;
-                            this.initPlay();
-                        }
+                        else { clearInterval(cd); this.isCountingDown = false; this.initPlay(); }
                     }, 1000);
                 },
                 initPlay() {
                     this.screen = 'play';
-                    this.currentRound = 1; this.currentExIdx = 0; this.isResting = false;
-                    this.rounds = 0;
+                    this.currentRound = 1; this.currentExIdx = 0; this.isResting = false; this.rounds = 0;
                     if(this.activeMode === 'MIX') this.setMixTimer();
-                    else this.timer = 0; 
+                    else if(this.activeMode === 'AMRAP') this.timer = this.quickDuration * 60;
+                    else if(this.activeMode === 'FOR TIME') this.timer = (this.forTimeType === 'down') ? this.quickDuration * 60 : 0;
+                    else if(this.activeMode === 'EMOM') this.timer = this.emomInterval;
+                    else if(this.activeMode === 'TABATA') this.timer = this.tabataWork;
                     this.runTimer();
                 },
                 setMixTimer() {
@@ -238,27 +265,30 @@
                 runTimer() {
                     clearInterval(this.interval);
                     this.interval = setInterval(() => {
-                        if(this.isResting || (this.activeMode === 'MIX' && this.routine.exercises[this.currentExIdx].workMode === 'tiempo')) {
-                            if(this.timer > 0) this.timer--; else this.nextStep();
-                        } else {
-                            this.timer++;
-                        }
+                        const isDown = this.isResting || ['AMRAP','EMOM','TABATA'].includes(this.activeMode) || 
+                                       (this.activeMode === 'FOR TIME' && this.forTimeType === 'down') ||
+                                       (this.activeMode === 'MIX' && !this.isResting && this.routine.exercises[this.currentExIdx].workMode === 'tiempo');
+                        
+                        if(isDown) { if(this.timer > 0) this.timer--; else this.nextStep(); }
+                        else this.timer++;
                     }, 1000);
                 },
                 nextStep() {
-                    const ex = this.routine.exercises[this.currentExIdx];
-                    if(!this.isResting && ex.restTime > 0) {
-                        this.isResting = true; this.timer = ex.restTime;
-                    } else {
-                        this.isResting = false;
-                        if(this.currentExIdx < this.routine.exercises.length - 1) {
-                            this.currentExIdx++; this.setMixTimer();
-                        } else if(this.currentRound < this.routine.series) {
-                            this.currentRound++; this.currentExIdx = 0; this.setMixTimer();
-                        } else {
-                            this.stopWorkout(); alert("Sesión Completada");
+                    if(this.activeMode === 'MIX') {
+                        const ex = this.routine.exercises[this.currentExIdx];
+                        if(!this.isResting && ex.restTime > 0) { this.isResting = true; this.timer = ex.restTime; }
+                        else {
+                            this.isResting = false;
+                            if(this.currentExIdx < this.routine.exercises.length - 1) { this.currentExIdx++; this.setMixTimer(); }
+                            else if(this.currentRound < this.routine.series) { this.currentRound++; this.currentExIdx = 0; this.setMixTimer(); }
+                            else this.stopWorkout();
                         }
-                    }
+                    } else if(this.activeMode === 'EMOM') {
+                        if(this.currentRound < this.quickRounds) { this.currentRound++; this.timer = this.emomInterval; } else this.stopWorkout();
+                    } else if(this.activeMode === 'TABATA') {
+                        if(!this.isResting) { this.isResting = true; this.timer = this.tabataRest; }
+                        else { this.isResting = false; this.currentRound++; if(this.currentRound > this.quickRounds) this.stopWorkout(); else this.timer = this.tabataWork; }
+                    } else this.stopWorkout();
                 },
                 addRound() { if(!this.cooldown) { this.rounds++; this.cooldown = true; setTimeout(()=>this.cooldown=false, 800); } },
                 formatTime(s) { const m = Math.floor(s/60); const sc = s%60; return `${m}:${sc.toString().padStart(2,'0')}`; },
