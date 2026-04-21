@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TRAINLAB v4</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0F0F15; color: white; -webkit-tap-highlight-color: transparent; }
+        .bg-card { background-color: #1A1A24; }
+        .bg-input { background-color: #12121A; }
+        .accent-yellow { background-color: #E2FF3B; color: #000; }
+        input::placeholder { color: #374151; }
+        /* Animación suave entre pantallas */
+        .v-enter-active, .v-leave-active { transition: opacity 0.2s ease; }
+        .v-enter-from, .v-leave-to { opacity: 0; }
+    </style>
+</head>
+<body>
+    <div id="app" class="max-w-md mx-auto min-h-screen shadow-2xl shadow-black">
+        <transition mode="out-in">
+            
+            <div v-if="screen === 'menu'" key="menu" class="p-8 pt-16">
+                <div class="text-center mb-12">
+                    <h1 class="text-4xl font-black italic tracking-tighter uppercase">Train<span class="text-[#E2FF3B]">Lab</span></h1>
+                    <p class="text-gray-600 text-[10px] uppercase tracking-[0.4em] mt-2 font-bold">Performance System</p>
+                </div>
+
+                <div class="space-y-4">
+                    <button @click="screen = 'builder'" class="w-full py-6 rounded-full font-black text-xl uppercase bg-[#E2FF3B] text-black shadow-[0_0_25px_rgba(226,255,59,0.2)] flex items-center justify-center gap-3 active:scale-95 transition-all">
+                        <i class="fas fa-layer-group text-sm"></i> Builder / Mix
+                    </button>
+                    <button @click="openQuick('AMRAP')" class="w-full py-6 rounded-full font-black text-xl uppercase bg-[#D97706] active:scale-95 transition-all shadow-lg">AMRAP</button>
+                    <button @click="openQuick('FOR TIME')" class="w-full py-6 rounded-full font-black text-xl uppercase bg-[#4F46E5] active:scale-95 transition-all shadow-lg">For Time</button>
+                    <button @click="openQuick('EMOM')" class="w-full py-6 rounded-full font-black text-xl uppercase bg-[#9333EA] active:scale-95 transition-all shadow-lg">EMOM</button>
+                    <button @click="openQuick('TABATA')" class="w-full py-6 rounded-full font-black text-xl uppercase bg-[#10B981] active:scale-95 transition-all shadow-lg">TABATA</button>
+                </div>
+            </div>
+
+            <div v-else-if="screen === 'builder'" key="builder" class="p-6 pb-40">
+                <div class="flex items-center mb-10">
+                    <button @click="screen = 'menu'" class="text-gray-500 hover:text-white mr-4 transition-colors"><i class="fas fa-arrow-left text-xl"></i></button>
+                    <h1 class="text-2xl font-black uppercase italic tracking-tight">Nuevo Entreno</h1>
+                </div>
+
+                <div class="bg-card rounded-3xl p-6 border border-gray-800 mb-8 space-y-6">
+                    <div>
+                        <label class="text-[10px] uppercase text-gray-500 font-black block mb-2 tracking-widest">Nombre del entreno</label>
+                        <input v-model="routine.name" placeholder="PUSH DAY, STRENGTH..." class="w-full bg-input border border-gray-800 rounded-xl p-4 font-bold outline-none focus:border-[#E2FF3B] transition-all">
+                    </div>
+                    <div>
+                        <label class="text-[10px] uppercase text-gray-500 font-black block mb-2 tracking-widest">Series Globales</label>
+                        <div class="flex items-center gap-6">
+                            <button @click="routine.series > 1 ? routine.series-- : 1" class="w-12 h-12 bg-input border border-gray-800 rounded-xl font-bold text-2xl flex items-center justify-center">-</button>
+                            <span class="text-4xl font-black text-[#E2FF3B] w-8 text-center">{{ routine.series }}</span>
+                            <button @click="routine.series++" class="w-12 h-12 bg-input border border-gray-800 rounded-xl font-bold text-2xl flex items-center justify-center">+</button>
+                            <span class="text-[10px] uppercase font-bold text-gray-600">Series</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between mb-4 px-2">
+                    <h2 class="text-[10px] uppercase text-gray-500 font-black tracking-widest">Ejercicios</h2>
+                    <button @click="addExercise" class="accent-yellow px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-md active:scale-90 transition-all">+ Añadir</button>
+                </div>
+
+                <div v-if="routine.exercises.length === 0" @click="addExercise" class="border-2 border-dashed border-gray-800 rounded-3xl py-16 text-center text-gray-600 font-black text-[10px] uppercase tracking-[0.2em] cursor-pointer hover:bg-white/5 transition-all">
+                    Toca para añadir ejercicios <i class="fas fa-plus ml-2"></i>
+                </div>
+
+                <div class="space-y-4">
+                    <div v-for="(ex, index) in routine.exercises" :key="ex.id" class="bg-card rounded-3xl p-5 border border-gray-800 shadow-xl">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-[#E2FF3B] font-black italic text-2xl">{{ index + 1 }}</span>
+                            <input v-model="ex.name" placeholder="Ejercicio..." class="bg-input rounded-xl px-4 py-3 flex-1 outline-none text-sm font-bold border border-transparent focus:border-gray-700">
+                            <button @click="removeExercise(index)" class="text-red-500/40 hover:text-red-500 p-2"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[9px] uppercase text-gray-600 font-black mb-1 block">Reps / Nota</label>
+                                <input v-model="ex.note" placeholder="8 / 75%" class="w-full bg-input p-4 rounded-2xl text-sm text-center font-bold border border-gray-800 outline-none">
+                            </div>
+                            <div>
+                                <label class="text-[9px] uppercase text-gray-600 font-black mb-1 block">Descanso</label>
+                                <div class="bg-input p-4 rounded-2xl text-sm flex items-center justify-center gap-3 border border-gray-800">
+                                    <button @click="ex.restTime > 0 ? ex.restTime -= 5 : 0" class="text-gray-600 font-black text-lg">-</button>
+                                    <span class="text-cyan-400 font-black text-lg w-10 text-center">{{ ex.restTime }}s</span>
+                                    <button @click="ex.restTime += 5" class="text-gray-600 font-black text-lg">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fixed bottom-0 left-0 right-0 p-6 bg-[#0F0F15]/95 backdrop-blur-xl border-t border-gray-900 flex gap-4 z-50">
+                    <button @click="screen = 'menu'" class="flex-1 bg-card py-5 rounded-2xl font-black uppercase text-[10px] text-gray-500 tracking-[0.2em] border border-gray-800">Cerrar</button>
+                    <button @click="startWorkout" class="flex-[2] accent-yellow py-5 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-lg active:scale-95 transition-all">Empezar ✓</button>
+                </div>
+            </div>
+
+            <div v-else-if="screen === 'play'" key="play" :class="isResting ? 'bg-blue-950' : 'bg-[#0F0F15]'" class="h-screen flex flex-col items-center justify-between p-10 transition-colors duration-700">
+                <div class="text-center w-full">
+                    <div class="inline-block bg-white/10 px-4 py-1 rounded-full mb-6">
+                        <span class="text-[10px] font-black uppercase tracking-[0.3em]">Serie {{ currentRound }} / {{ routine.series }}</span>
+                    </div>
+                    <p class="text-[#E2FF3B] text-[10px] uppercase font-black tracking-widest mb-2">{{ isResting ? 'Fase de Descanso' : 'Fase de Trabajo' }}</p>
+                    <h2 class="text-4xl font-black italic uppercase leading-none break-words">{{ isResting ? 'Próximo: ' + (nextExName) : currentEx.name }}</h2>
+                    <p class="text-gray-500 mt-4 font-bold uppercase text-xs">{{ currentEx.note }}</p>
+                </div>
+
+                <div class="text-[140px] font-black font-mono leading-none tracking-tighter" :class="isResting ? 'text-cyan-400' : 'text-white'">
+                    {{ formatTime(timer) }}
+                </div>
+
+                <div class="w-full space-y-4">
+                    <button @click="nextStep" class="w-full bg-white text-black py-7 rounded-[40px] font-black text-3xl uppercase tracking-tighter active:scale-95 transition-all shadow-[0_15px_40px_rgba(255,255,255,0.1)]">
+                        {{ isResting ? 'Saltar' : 'Hecho' }}
+                    </button>
+                    <button @click="stopWorkout" class="w-full text-gray-600 font-black uppercase text-[10px] tracking-[0.3em] py-2">Finalizar Entrenamiento</button>
+                </div>
+            </div>
+
+        </transition>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        createApp({
+            data() {
+                return {
+                    screen: 'menu',
+                    // Llave de memoria única para esta versión: 'trainlab_vfinal'
+                    routine: JSON.parse(localStorage.getItem('trainlab_vfinal')) || { name: "", series: 3, exercises: [] },
+                    currentExIdx: 0,
+                    currentRound: 1,
+                    isResting: false,
+                    timer: 0,
+                    interval: null
+                }
+            },
+            computed: {
+                currentEx() { return this.routine.exercises[this.currentExIdx] || {name: 'GO!', note: '', restTime: 60}; },
+                nextExName() {
+                    let nextIdx = this.currentExIdx + 1;
+                    if (nextIdx < this.routine.exercises.length) {
+                        return this.routine.exercises[nextIdx].name;
+                    } else if (this.currentRound < this.routine.series) {
+                        return this.routine.exercises[0].name;
+                    }
+                    return "¡Fin del entreno!";
+                }
+            },
+            watch: {
+                routine: {
+                    handler(val) { localStorage.setItem('trainlab_vfinal', JSON.stringify(val)); },
+                    deep: true
+                }
+            },
+            methods: {
+                addExercise() {
+                    this.routine.exercises.push({ id: Date.now(), name: "", note: "", restTime: 60 });
+                },
+                removeExercise(idx) { this.routine.exercises.splice(idx, 1); },
+                formatTime(s) {
+                    const m = Math.floor(s / 60);
+                    const sc = s % 60;
+                    return `${m}:${sc.toString().padStart(2, '0')}`;
+                },
+                startWorkout() {
+                    if(this.routine.exercises.length === 0) return alert("Añade algún ejercicio");
+                    this.screen = 'play';
+                    this.currentExIdx = 0;
+                    this.currentRound = 1;
+                    this.isResting = false;
+                    this.timer = 0;
+                    this.runTimer();
+                },
+                runTimer() {
+                    clearInterval(this.interval);
+                    this.interval = setInterval(() => {
+                        if(this.isResting) {
+                            if(this.timer > 0) this.timer--;
+                            else this.nextStep();
+                        } else {
+                            this.timer++;
+                        }
+                    }, 1000);
+                },
+                nextStep() {
+                    if(!this.isResting) {
+                        this.isResting = true;
+                        this.timer = this.currentEx.restTime;
+                    } else {
+                        this.isResting = false;
+                        this.timer = 0;
+                        if(this.currentExIdx < this.routine.exercises.length - 1) {
+                            this.currentExIdx++;
+                        } else if (this.currentRound < this.routine.series) {
+                            this.currentExIdx = 0;
+                            this.currentRound++;
+                        } else {
+                            this.stopWorkout();
+                            alert("¡ENTRENAMIENTO COMPLETADO!");
+                        }
+                    }
+                },
+                stopWorkout() {
+                    clearInterval(this.interval);
+                    this.screen = 'menu';
+                },
+                openQuick(mode) {
+                    alert("Modo " + mode + " se activará tras tu feedback del Builder.");
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
