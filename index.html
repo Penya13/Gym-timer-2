@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Timer Pro</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.0/lucide.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0F0F15; color: white; }
+        .neon-shadow { box-shadow: 0 0 15px rgba(226, 255, 59, 0.3); }
+    </style>
+</head>
+<body>
+    <div id="app" class="max-w-md mx-auto min-h-screen relative">
+        
+        <div v-if="screen === 'config'" class="p-6 pb-32">
+            <h1 class="text-[#E2FF3B] font-black text-2xl mb-6 tracking-tighter italic">TRAIN_APP v1.0</h1>
+            
+            <div class="space-y-4">
+                <div v-for="(ex, index) in exercises" :key="ex.id" class="bg-[#1A1A24] p-4 rounded-2xl border border-gray-800">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-[#E2FF3B] font-bold">{{ index + 1 }}</span>
+                        <input v-model="ex.name" placeholder="Ejercicio..." class="bg-[#252533] rounded-lg px-3 py-2 flex-1 outline-none text-sm">
+                        <button @click="removeExercise(index)" class="text-gray-600">×</button>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="bg-[#252533] p-2 rounded-xl text-center">
+                            <span class="text-[10px] text-gray-500 block uppercase">Reps / %</span>
+                            <input v-model="ex.note" class="bg-transparent text-center font-bold w-full outline-none text-sm" placeholder="6 / 75%">
+                        </div>
+                        <div class="bg-[#252533] p-2 rounded-xl text-center">
+                            <span class="text-[10px] text-gray-500 block uppercase">Descanso (s)</span>
+                            <input v-model.number="ex.restTime" type="number" class="bg-transparent text-center font-bold w-full outline-none text-sm text-cyan-400">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button @click="ex.workMode = 'libre'" :class="ex.workMode === 'libre' ? 'bg-[#E2FF3B] text-black' : 'bg-gray-800 text-gray-400'" class="flex-1 py-2 rounded-lg text-[10px] font-bold transition-all">LIBRE</button>
+                        <button @click="ex.workMode = 'tiempo'" :class="ex.workMode === 'tiempo' ? 'bg-[#E2FF3B] text-black' : 'bg-gray-800 text-gray-400'" class="flex-1 py-2 rounded-lg text-[10px] font-bold transition-all">TIEMPO</button>
+                    </div>
+                </div>
+            </div>
+
+            <button @click="addExercise" class="w-full mt-6 py-4 border-2 border-dashed border-gray-800 rounded-2xl text-gray-500 font-bold">+ AÑADIR</button>
+
+            <div class="fixed bottom-6 left-0 right-0 px-6">
+                <button @click="startWorkout" class="w-full bg-[#E2FF3B] text-black font-black py-4 rounded-2xl neon-shadow uppercase tracking-widest active:scale-95 transition-transform">
+                    Empezar Entrenamiento
+                </button>
+            </div>
+        </div>
+
+        <div v-else :class="isResting ? 'bg-blue-950' : 'bg-[#0F0F15]'" class="h-screen flex flex-col items-center justify-between p-8 transition-colors duration-500">
+            <div class="text-center mt-8">
+                <p class="text-yellow-400 font-bold tracking-widest text-xs uppercase mb-2">
+                    {{ isResting ? 'Descanso' : 'Trabajando' }}
+                </p>
+                <h2 class="text-3xl font-black uppercase italic">{{ currentEx.name || 'Ejercicio' }}</h2>
+                <p class="text-gray-400 mt-2">{{ currentEx.note }}</p>
+            </div>
+
+            <div class="text-[120px] font-black font-mono leading-none" :class="isResting ? 'text-cyan-400' : 'text-[#E2FF3B]'">
+                {{ formatTime(timer) }}
+            </div>
+
+            <div class="w-full space-y-4 mb-8">
+                <button @click="nextStep" class="w-full bg-white text-black font-black py-5 rounded-2xl text-xl uppercase tracking-tighter">
+                    {{ isResting ? 'Saltar Descanso' : 'Siguiente' }}
+                </button>
+                <button @click="screen = 'config'" class="w-full text-gray-500 font-bold py-2">CANCELAR</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    screen: 'config',
+                    exercises: JSON.parse(localStorage.getItem('gym_v1')) || [{ id: 1, name: "Bench Press", note: "6 reps", workMode: "libre", restTime: 60 }],
+                    currentIdx: 0,
+                    isResting: false,
+                    timer: 0,
+                    interval: null
+                }
+            },
+            computed: {
+                currentEx() { return this.exercises[this.currentIdx]; }
+            },
+            watch: {
+                exercises: {
+                    handler(val) { localStorage.setItem('gym_v1', JSON.stringify(val)); },
+                    deep: true
+                }
+            },
+            methods: {
+                addExercise() {
+                    this.exercises.push({ id: Date.now(), name: "", note: "", workMode: "libre", restTime: 60 });
+                },
+                removeExercise(index) {
+                    this.exercises.splice(index, 1);
+                },
+                formatTime(s) {
+                    const mins = Math.floor(s / 60);
+                    const secs = s % 60;
+                    return `${mins}:${secs.toString().padStart(2, '0')}`;
+                },
+                startWorkout() {
+                    this.screen = 'play';
+                    this.currentIdx = 0;
+                    this.isResting = false;
+                    this.startPhase();
+                },
+                startPhase() {
+                    clearInterval(this.interval);
+                    if (this.isResting) {
+                        this.timer = this.currentEx.restTime;
+                        this.interval = setInterval(() => {
+                            if (this.timer > 0) this.timer--;
+                            else this.nextStep();
+                        }, 1000);
+                    } else {
+                        this.timer = 0;
+                        this.interval = setInterval(() => { this.timer++; }, 1000);
+                    }
+                },
+                nextStep() {
+                    if (!this.isResting) {
+                        this.isResting = true;
+                        this.startPhase();
+                    } else {
+                        if (this.currentIdx < this.exercises.length - 1) {
+                            this.currentIdx++;
+                            this.isResting = false;
+                            this.startPhase();
+                        } else {
+                            alert("¡Entrenamiento completado!");
+                            this.screen = 'config';
+                            clearInterval(this.interval);
+                        }
+                    }
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
