@@ -2,109 +2,178 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TRAINLAB Ultra</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>TRAINLAB iOS 26</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #0F0F15; color: white; -webkit-tap-highlight-color: transparent; }
-        .bg-card { background-color: #1A1A24; }
-        .bg-input { background-color: #12121A; }
-        .accent-yellow { background-color: #E2FF3B; color: #000; }
-        select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.5rem center; background-size: 1.5em; }
+        @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600;900&family=Inter:wght@400;700;900&display=swap');
+        
+        :root {
+            --ios-bg: #000000;
+            --glass: rgba(255, 255, 255, 0.06);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --accent: #E2FF3B;
+        }
+
+        body { 
+            font-family: 'SF Pro Display', 'Inter', sans-serif; 
+            background: radial-gradient(circle at 50% -20%, #1a1a2e 0%, #000000 100%);
+            color: white; 
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100vh;
+        }
+
+        /* Efecto Glassmorfismo iOS 26 */
+        .ios-glass {
+            background: var(--glass);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+        }
+
+        .ios-input {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .ios-input:focus {
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        /* Botón estilo "Liquid" */
+        .btn-liquid {
+            background: var(--accent);
+            color: black;
+            font-weight: 900;
+            box-shadow: 0 10px 40px rgba(226, 255, 59, 0.15);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .btn-liquid:active {
+            transform: scale(0.92) translateY(4px);
+            box-shadow: 0 5px 15px rgba(226, 255, 59, 0.05);
+        }
+
+        /* Ocultar scrollbar pero permitir scroll */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        select { appearance: none; background-image: none; text-align-last: center; }
     </style>
 </head>
-<body>
-    <div id="app" class="max-w-md mx-auto min-h-screen">
+<body class="no-scrollbar">
+    <div id="app" class="max-w-md mx-auto min-h-screen px-6 py-safe">
         
-        <div v-if="screen === 'menu'" class="p-8 pt-16 animate-in fade-in">
-            <h1 class="text-4xl font-black italic mb-12 text-center uppercase tracking-tighter">Train<span class="text-[#E2FF3B]">Lab</span></h1>
-            <div class="space-y-4">
-                <button @click="screen = 'builder'" class="w-full py-6 rounded-full font-black text-xl uppercase bg-[#E2FF3B] text-black shadow-lg">Builder / Mix</button>
+        <div v-if="screen === 'menu'" class="pt-20 animate-in fade-in zoom-in duration-700">
+            <div class="mb-16">
+                <h1 class="text-5xl font-black italic tracking-tighter text-center leading-none">TRAIN<span class="text-[#E2FF3B]">LAB</span></h1>
+                <p class="text-gray-500 text-center text-[9px] uppercase tracking-[0.5em] mt-4 font-bold opacity-50">Future of Performance</p>
+            </div>
+
+            <div class="space-y-5">
+                <button @click="screen = 'builder'" class="ios-glass w-full py-8 btn-liquid text-xl uppercase tracking-widest border-none">
+                    Builder / Mix
+                </button>
                 <div class="grid grid-cols-2 gap-4">
-                    <button class="py-6 rounded-3xl font-bold bg-[#D97706]">AMRAP</button>
-                    <button class="py-6 rounded-3xl font-bold bg-[#4F46E5]">FOR TIME</button>
+                    <button class="ios-glass py-6 font-black text-orange-500 uppercase tracking-widest border-orange-500/20">AMRAP</button>
+                    <button class="ios-glass py-6 font-black text-indigo-400 uppercase tracking-widest border-indigo-500/20">FOR TIME</button>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <button class="ios-glass py-6 font-black text-purple-400 uppercase tracking-widest border-purple-500/20">EMOM</button>
+                    <button class="ios-glass py-6 font-black text-emerald-400 uppercase tracking-widest border-emerald-500/20 text-xs">TABATA</button>
                 </div>
             </div>
         </div>
 
-        <div v-else-if="screen === 'builder'" class="p-6 pb-40">
-            <div class="flex items-center justify-between mb-8">
-                <button @click="screen = 'menu'" class="text-gray-500"><i class="fas fa-arrow-left text-xl"></i></button>
-                <h1 class="text-xl font-black uppercase italic">Nuevo Entreno</h1>
-                <div class="w-6"></div>
+        <div v-else-if="screen === 'builder'" class="pt-14 pb-44 animate-in slide-in-from-bottom duration-500">
+            <div class="flex items-center justify-between mb-10">
+                <button @click="screen = 'menu'" class="ios-glass w-12 h-12 flex items-center justify-center rounded-2xl"><i class="fas fa-chevron-left opacity-50"></i></button>
+                <h1 class="text-lg font-black uppercase italic tracking-widest">Editor</h1>
+                <div class="w-12"></div>
             </div>
 
-            <div class="bg-card rounded-3xl p-6 mb-6 border border-gray-800">
-                <input v-model="routine.name" placeholder="NOMBRE DEL ENTRENO" class="w-full bg-transparent text-2xl font-black border-b border-gray-800 pb-2 mb-6 outline-none focus:border-[#E2FF3B]">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Series Globales</span>
-                    <select v-model="routine.series" class="bg-input text-[#E2FF3B] font-black py-2 px-6 rounded-xl border border-gray-800">
-                        <option v-for="n in 12" :key="n" :value="n">{{ n }} SERIES</option>
+            <div class="ios-glass p-8 mb-8">
+                <label class="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-4 block">Rutina</label>
+                <input v-model="routine.name" placeholder="NOMBRE DEL PLAN" class="w-full bg-transparent text-3xl font-black border-none outline-none placeholder:opacity-20 mb-8">
+                
+                <div class="flex items-center justify-between bg-white/5 p-4 rounded-2xl border border-white/5">
+                    <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Series totales</span>
+                    <select v-model="routine.series" class="bg-transparent text-[#E2FF3B] font-black text-xl outline-none">
+                        <option v-for="n in 12" :key="n" :value="n">{{ n }}</option>
                     </select>
                 </div>
             </div>
 
-            <div v-for="(ex, index) in routine.exercises" :key="ex.id" class="bg-card rounded-3xl p-5 mb-4 border border-gray-800 relative">
-                <div class="flex items-center gap-3 mb-4">
-                    <span class="text-[#E2FF3B] font-black italic text-xl">{{ index + 1 }}</span>
-                    <input v-model="ex.name" placeholder="Ejercicio..." class="bg-input rounded-xl px-4 py-2 flex-1 outline-none font-bold">
-                    <button @click="removeExercise(index)" class="text-red-500/30"><i class="fas fa-trash"></i></button>
+            <div v-for="(ex, index) in routine.exercises" :key="ex.id" class="ios-glass p-6 mb-6">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-10 h-10 rounded-full bg-[#E2FF3B] text-black flex items-center justify-center font-black italic">{{ index + 1 }}</div>
+                    <input v-model="ex.name" placeholder="Ejercicio..." class="bg-transparent text-xl font-bold flex-1 outline-none">
+                    <button @click="removeExercise(index)" class="opacity-20"><i class="fas fa-minus-circle"></i></button>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 mb-6">
-                    <input v-model="ex.note" placeholder="Reps / Nota" class="bg-input p-3 rounded-xl text-center text-sm font-bold border border-gray-800">
-                    <div class="bg-input p-1 rounded-xl flex">
-                        <button @click="ex.workMode = 'libre'" :class="ex.workMode === 'libre' ? 'accent-yellow shadow-md' : 'text-gray-500'" class="flex-1 py-2 rounded-lg text-[10px] font-black uppercase">Libre</button>
-                        <button @click="ex.workMode = 'tiempo'" :class="ex.workMode === 'tiempo' ? 'accent-yellow' : 'text-gray-500'" class="flex-1 py-2 rounded-lg text-[10px] font-black uppercase">Tiempo</button>
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <input v-model="ex.note" placeholder="Nota / Reps" class="ios-input p-4 rounded-2xl text-center text-xs font-bold outline-none">
+                    <div class="ios-input p-1 rounded-2xl flex">
+                        <button @click="ex.workMode = 'libre'" :class="ex.workMode === 'libre' ? 'bg-[#E2FF3B] text-black' : 'text-gray-500'" class="flex-1 py-3 rounded-xl text-[9px] font-black uppercase transition-all">LIBRE</button>
+                        <button @click="ex.workMode = 'tiempo'" :class="ex.workMode === 'tiempo' ? 'bg-[#E2FF3B] text-black' : 'text-gray-500'" class="flex-1 py-3 rounded-xl text-[9px] font-black uppercase transition-all">TIEMPO</button>
                     </div>
                 </div>
 
-                <div v-if="ex.workMode === 'tiempo'" class="mb-6 animate-in slide-in-from-top">
-                    <label class="text-[10px] text-gray-500 font-black uppercase mb-2 block">Duración Ejercicio</label>
-                    <select v-model="ex.workTime" class="w-full bg-input p-4 rounded-xl text-center font-black text-[#E2FF3B] border border-gray-800">
-                        <option v-for="t in [15,30,45,60,90,120]" :value="t">{{ t }} SEGUNDOS</option>
-                    </select>
-                </div>
-
-                <div class="pt-4 border-t border-gray-800">
-                    <div class="flex items-center justify-between mb-3">
-                        <label class="text-[10px] text-gray-500 font-black uppercase">Descanso</label>
-                        <button @click="ex.hasRest = !ex.hasRest" :class="ex.hasRest ? 'text-cyan-400' : 'text-gray-600'" class="text-xs font-bold uppercase">
-                            {{ ex.hasRest ? 'Activado ✓' : 'Omitido ×' }}
-                        </button>
+                <div class="space-y-4">
+                    <div v-if="ex.workMode === 'tiempo'" class="bg-white/5 p-4 rounded-2xl flex justify-between items-center border border-white/5">
+                        <span class="text-[9px] font-black text-gray-500 uppercase tracking-widest">Trabajo</span>
+                        <select v-model="ex.workTime" class="bg-transparent font-black text-[#E2FF3B] text-sm">
+                            <option v-for="t in [15,30,45,60,90,120,300]" :value="t">{{ t }}s</option>
+                        </select>
                     </div>
-                    <select v-if="ex.hasRest" v-model="ex.restTime" class="w-full bg-input p-4 rounded-xl text-center font-black text-cyan-400 border border-gray-800">
-                        <option v-for="t in [0,15,30,45,60,90,120,180]" :value="t">{{ t }} SEGUNDOS DESC.</option>
-                    </select>
+
+                    <div class="bg-white/5 p-4 rounded-2xl flex justify-between items-center border border-white/5">
+                        <span class="text-[9px] font-black text-gray-500 uppercase tracking-widest">Descanso</span>
+                        <div class="flex items-center gap-4">
+                            <button @click="ex.hasRest = !ex.hasRest" :class="ex.hasRest ? 'text-cyan-400' : 'text-gray-600'" class="text-[9px] font-black uppercase">
+                                {{ ex.hasRest ? 'ON' : 'OFF' }}
+                            </button>
+                            <select v-if="ex.hasRest" v-model="ex.restTime" class="bg-transparent font-black text-cyan-400 text-sm">
+                                <option v-for="t in [15,30,45,60,90,120,180]" :value="t">{{ t }}s</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <button @click="addExercise" class="w-full py-4 border-2 border-dashed border-gray-800 rounded-3xl text-gray-500 font-black uppercase text-xs tracking-widest">+ Añadir Ejercicio</button>
+            <button @click="addExercise" class="w-full py-6 rounded-3xl border border-white/10 text-gray-500 font-black uppercase text-[10px] tracking-[0.3em] mb-12">
+                + Añadir Ejercicio
+            </button>
 
-            <div class="fixed bottom-0 left-0 right-0 p-6 bg-[#0F0F15]/90 backdrop-blur-lg flex gap-4">
-                <button @click="startWorkout" class="w-full accent-yellow py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl">¡A ENTRENAR!</button>
+            <div class="fixed bottom-0 left-0 right-0 p-8 bg-black/60 backdrop-blur-3xl border-t border-white/5 flex gap-4">
+                <button @click="startWorkout" class="w-full btn-liquid py-6 rounded-3xl text-xs uppercase tracking-[0.3em]">
+                    GO SESSION
+                </button>
             </div>
         </div>
 
-        <div v-else-if="screen === 'play'" :class="isResting ? 'bg-blue-950' : 'bg-[#0F0F15]'" class="h-screen flex flex-col items-center justify-between p-10 transition-colors duration-700">
-            <div class="text-center">
-                <p class="text-[#E2FF3B] font-bold text-xs uppercase mb-2">Serie {{ currentRound }} / {{ routine.series }}</p>
-                <h2 class="text-4xl font-black italic uppercase leading-tight">{{ isResting ? 'Descansa' : currentEx.name }}</h2>
-                <p class="text-gray-500 mt-2 font-bold">{{ currentEx.note }}</p>
+        <div v-else-if="screen === 'play'" :class="isResting ? 'bg-blue-900/30' : ''" class="h-screen flex flex-col items-center justify-between p-12 transition-all duration-1000">
+            <div class="text-center w-full pt-12">
+                <div class="inline-block px-5 py-2 rounded-full ios-glass border-white/5 mb-8">
+                    <span class="text-[10px] font-black uppercase tracking-widest text-white/50">Serie {{ currentRound }} · {{ routine.series }}</span>
+                </div>
+                <h2 class="text-5xl font-black italic uppercase leading-tight tracking-tighter">{{ isResting ? 'REST' : currentEx.name }}</h2>
+                <p class="text-white/40 mt-6 font-bold uppercase text-xs tracking-widest">{{ currentEx.note }}</p>
             </div>
 
-            <div class="text-[140px] font-black font-mono leading-none" :class="isResting ? 'text-cyan-400' : 'text-white'">
+            <div class="text-[160px] font-black font-mono leading-none tracking-tighter tabular-nums" :class="isResting ? 'text-cyan-400' : 'text-[#E2FF3B]'">
                 {{ formatTime(timer) }}
             </div>
 
-            <div class="w-full space-y-4">
-                <button @click="nextStep" class="w-full bg-white text-black py-7 rounded-[40px] font-black text-3xl uppercase tracking-tighter active:scale-95 shadow-2xl">
-                    {{ isResting ? 'Saltar' : (currentEx.workMode === 'tiempo' ? 'Pausar' : 'Hecho') }}
+            <div class="w-full space-y-6 pb-12">
+                <button @click="nextStep" class="w-full bg-white text-black py-8 rounded-[40px] font-black text-3xl uppercase tracking-tighter shadow-[0_20px_50px_rgba(255,255,255,0.15)] active:scale-95 transition-all">
+                    {{ isResting ? 'SKIP' : 'DONE' }}
                 </button>
-                <button @click="stopWorkout" class="w-full text-gray-600 font-black uppercase text-[10px] tracking-widest">Finalizar</button>
+                <button @click="stopWorkout" class="w-full text-white/20 font-black uppercase text-[9px] tracking-[0.4em]">Abortar Misión</button>
             </div>
         </div>
     </div>
@@ -115,7 +184,8 @@
             data() {
                 return {
                     screen: 'menu',
-                    routine: JSON.parse(localStorage.getItem('trainlab_v5')) || { name: "", series: 3, exercises: [] },
+                    // Nueva clave v2026
+                    routine: JSON.parse(localStorage.getItem('trainlab_2026')) || { name: "", series: 3, exercises: [] },
                     currentExIdx: 0,
                     currentRound: 1,
                     isResting: false,
@@ -124,7 +194,7 @@
                 }
             },
             watch: {
-                routine: { handler(val) { localStorage.setItem('trainlab_v5', JSON.stringify(val)); }, deep: true }
+                routine: { handler(val) { localStorage.setItem('trainlab_2026', JSON.stringify(val)); }, deep: true }
             },
             methods: {
                 addExercise() {
@@ -184,7 +254,7 @@
                         this.currentRound++;
                     } else {
                         this.stopWorkout();
-                        alert("¡ENTRENO COMPLETADO!");
+                        alert("ULTRA PERFORMANCE ACHIEVED.");
                         return;
                     }
                     this.setupPhase();
