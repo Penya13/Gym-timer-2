@@ -2,193 +2,225 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TRAINLAB v2026.FINAL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>BOXTIMER</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;600;700&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #0F0F15; color: white; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
+        :root { --accent: #E2FF3B; --bg: #0A0A0C; --card: #16161E; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; -webkit-tap-highlight-color: transparent; }
+        .font-teko { font-family: 'Teko', sans-serif; }
         
-        .bg-card { background-color: #1A1A24; border: 1px solid #2D2D3A; }
-        .bg-input { background-color: #12121A; border: 1px solid #1F1F29; }
+        /* Estética de las capturas */
+        .card-workout { background: var(--card); border-radius: 18px; border: 1px solid rgba(255,255,255,0.05); }
+        .btn-accent { background: var(--accent); color: black; font-weight: 900; border-radius: 12px; transition: all 0.2s; }
+        .btn-accent:active { transform: scale(0.98); opacity: 0.9; }
         
-        .builder-btn {
-            background-color: #E2FF3B; color: #000;
-            width: 100%; padding: 22px; border-radius: 14px;
-            font-weight: 900; font-size: 1.2rem; text-transform: uppercase;
-            margin-bottom: 24px; text-align: center; display: block;
-        }
+        .grid-btn { background: var(--card); border-radius: 24px; height: 110px; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 1px solid rgba(255,255,255,0.05); }
+        
+        /* Inputs tipo iPhone Dark */
+        .input-dark { background: #000000; border: 1px solid #2D2D3A; border-radius: 12px; padding: 12px; outline: none; }
+        
+        /* Botón AMRAP Plano */
+        .btn-amrap { background: var(--accent); color: black; border-radius: 35px; font-weight: 900; font-size: 4rem; }
 
-        .grid-btn { 
-            background-color: #1A1A24; border-radius: 28px; 
-            display: flex; align-items: center; justify-content: center;
-            height: 130px; font-weight: 900; text-transform: uppercase;
-            transition: transform 0.1s; border: 1px solid #2D2D3A;
-        }
-        .grid-btn:active { transform: scale(0.96); }
-
-        /* Botón AMRAP con estética de botón físico */
-        .btn-plus-one {
-            background-color: #E2FF3B; color: #000;
-            border: 4px solid #b5cc2f;
-            box-shadow: 0 8px 0 #8a9c24;
-            transition: all 0.1s;
-        }
-        .btn-plus-one:active {
-            transform: translateY(4px);
-            box-shadow: 0 4px 0 #8a9c24;
-        }
-        .btn-cooldown-active {
-            background-color: #ef4444 !important;
-            border-color: #b91c1c !important;
-            box-shadow: 0 4px 0 #7f1d1d !important;
-            transform: translateY(4px);
-        }
-
-        select { appearance: none; background: transparent; text-align-last: center; outline: none; width: 100%; font-weight: 900; color: #E2FF3B; cursor: pointer; }
-        option { background: #1A1A24; color: white; }
+        select { appearance: none; background: transparent; text-align-last: center; color: var(--accent); font-weight: 700; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
-    <div id="app" class="max-w-md mx-auto min-h-screen px-6 pt-12">
+    <div id="app" class="max-w-md mx-auto min-h-screen flex flex-col hide-scrollbar">
 
-        <div v-if="screen === 'menu'" class="animate-in fade-in">
-            <div class="flex justify-center mb-12">
-                <h1 class="text-5xl font-black italic tracking-tighter uppercase">Train<span class="text-[#E2FF3B]">Lab</span></h1>
+        <div v-if="screen === 'menu'" class="p-6 pt-12 animate-in fade-in">
+            <div class="flex justify-between items-end mb-8">
+                <h1 class="text-5xl font-teko font-bold tracking-tighter uppercase leading-none">BOX<span class="text-[#E2FF3B]">TIMER</span></h1>
+                <span class="text-[10px] font-black opacity-30 tracking-widest">V 2.0</span>
             </div>
-            <button @click="screen = 'builder'" class="builder-btn">Builder / Mix</button>
-            <div class="grid grid-cols-2 gap-4">
-                <div @click="openQuick('AMRAP', '#D97706')" class="grid-btn text-orange-500 text-xl">AMRAP</div>
-                <div @click="openQuick('FOR TIME', '#4F46E5')" class="grid-btn text-indigo-400 text-xl">FOR TIME</div>
-                <div @click="openQuick('EMOM', '#9333EA')" class="grid-btn text-purple-400 text-xl">EMOM</div>
-                <div @click="openQuick('TABATA', '#10B981')" class="grid-btn text-emerald-400 text-xl">TABATA</div>
+
+            <button @click="openBuilder()" class="btn-accent w-full py-4 mb-8 text-lg uppercase tracking-tight italic">
+                + Crear Entrenamiento
+            </button>
+
+            <div class="grid grid-cols-2 gap-3 mb-10">
+                <div @click="openQuick('AMRAP', '#D97706')" class="grid-btn text-orange-500 text-xl font-teko tracking-widest">AMRAP</div>
+                <div @click="openQuick('FOR TIME', '#4F46E5')" class="grid-btn text-indigo-400 text-xl font-teko tracking-widest">FOR TIME</div>
+                <div @click="openQuick('EMOM', '#9333EA')" class="grid-btn text-purple-400 text-xl font-teko tracking-widest">EMOM</div>
+                <div @click="openQuick('TABATA', '#10B981')" class="grid-btn text-emerald-400 text-xl font-teko tracking-widest">TABATA</div>
+            </div>
+
+            <h2 v-if="savedWorkouts.length" class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4 px-2">Mis Rutinas</h2>
+            <div class="space-y-3">
+                <div v-for="w in savedWorkouts" :key="w.id" class="card-workout p-5 flex items-center justify-between">
+                    <div>
+                        <h3 class="font-bold text-lg uppercase tracking-tight leading-none">{{ w.name }}</h3>
+                        <p class="text-[10px] text-gray-500 mt-1 uppercase">{{ w.series }} Series • {{ w.exercises.length }} Ejercicios</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button @click="deleteWorkout(w.id)" class="w-10 h-10 rounded-full bg-white/5 text-red-500/50 flex items-center justify-center"><i class="fas fa-trash-alt text-xs"></i></button>
+                        <button @click="startWorkout(w)" class="w-12 h-12 rounded-xl bg-[#E2FF3B] text-black flex items-center justify-center shadow-lg"><i class="fas fa-play"></i></button>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div v-else-if="screen === 'quick_config'" class="pt-10 animate-in slide-in-from-bottom">
+        <div v-else-if="screen === 'builder'" class="p-6 pt-10 pb-32">
+            <div class="flex items-center mb-8">
+                <button @click="screen = 'menu'"><i class="fas fa-chevron-left text-xl"></i></button>
+                <h1 class="flex-1 text-center font-teko text-3xl uppercase tracking-widest italic">Configurar Builder</h1>
+            </div>
+
+            <div class="bg-card p-6 rounded-3xl mb-6">
+                <input v-model="routine.name" placeholder="NOMBRE DEL ENTRENAMIENTO" class="w-full bg-transparent text-2xl font-black text-center outline-none border-b border-white/10 pb-2 mb-4 uppercase">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-gray-400">SERIES TOTALES</span>
+                    <select v-model="routine.series" class="text-xl font-black">
+                        <option v-for="n in 15" :value="n">{{ n }}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div v-for="(ex, index) in routine.exercises" :key="ex.id" class="bg-card p-5 rounded-2xl mb-4 border-l-4 border-[#E2FF3B]">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="font-teko text-2xl italic text-[#E2FF3B]">{{ index + 1 }}</span>
+                    <input v-model="ex.name" placeholder="Ejercicio..." class="input-dark flex-1 mx-3 text-sm font-bold">
+                    <button @click="removeExercise(index)" class="text-red-500/30 text-xl">&times;</button>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div class="flex flex-col">
+                        <label class="text-[9px] text-gray-500 font-bold mb-1">TRABAJO</label>
+                        <select v-model="ex.workMode" class="bg-input text-xs p-2 rounded-lg border border-white/5">
+                            <option value="libre">LIBRE (DONE)</option>
+                            <option value="tiempo">POR TIEMPO</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col" v-if="ex.workMode === 'tiempo'">
+                        <label class="text-[9px] text-gray-500 font-bold mb-1">TIEMPO (S)</label>
+                        <select v-model="ex.workSeconds" class="bg-input text-xs p-2 rounded-lg border border-white/5">
+                            <option v-for="t in [15,20,30,40,45,60,90,120]" :value="t">{{ t }}s</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-[9px] text-gray-500 font-bold mb-1">DESCANSO</label>
+                        <select v-model="ex.restTime" class="bg-input text-xs p-2 rounded-lg border border-white/5 text-cyan-400">
+                            <option v-for="t in [0,10,15,20,30,45,60,90,120]" :value="t">{{ t }}s</option>
+                        </select>
+                    </div>
+                </div>
+                <input v-model="ex.note" placeholder="Notas (ej: 10kg, 12 reps...)" class="input-dark w-full text-[10px] py-2">
+            </div>
+
+            <button @click="addExercise" class="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-gray-500 font-bold uppercase text-[10px] tracking-widest mb-6">
+                + Añadir Ejercicio
+            </button>
+
+            <button @click="saveAndStart" class="btn-accent fixed bottom-8 left-6 right-6 py-5 text-xl italic uppercase tracking-tighter shadow-2xl">
+                Guardar y Empezar
+            </button>
+        </div>
+
+        <div v-else-if="screen === 'quick_config'" class="p-6 pt-10">
             <div class="flex items-center mb-10">
-                <button @click="screen = 'menu'"><i class="fas fa-arrow-left text-xl text-gray-500"></i></button>
-                <h1 class="flex-1 text-center font-black uppercase italic text-2xl" :style="{color: activeColor}">{{ activeMode }}</h1>
+                <button @click="screen = 'menu'"><i class="fas fa-chevron-left text-xl"></i></button>
+                <h1 class="flex-1 text-center font-teko text-4xl uppercase tracking-tighter italic" :style="{color: activeColor}">{{ activeMode }}</h1>
             </div>
 
             <div class="space-y-6">
-                <div v-if="activeMode === 'FOR TIME'" class="bg-card p-2 rounded-2xl flex gap-2">
-                    <button @click="forTimeType = 'up'" :class="forTimeType === 'up' ? 'bg-[#E2FF3B] text-black' : 'text-gray-500'" class="flex-1 py-3 rounded-xl font-bold text-[10px] uppercase text-center">Chrono (Up)</button>
-                    <button @click="forTimeType = 'down'" :class="forTimeType === 'down' ? 'bg-[#E2FF3B] text-black' : 'text-gray-500'" class="flex-1 py-3 rounded-xl font-bold text-[10px] uppercase text-center">Time Cap (Down)</button>
+                <div v-if="activeMode === 'FOR TIME'" class="flex bg-card p-1 rounded-2xl">
+                    <button @click="forTimeType = 'up'" :class="forTimeType === 'up' ? 'btn-accent' : 'text-gray-500'" class="flex-1 py-3 rounded-xl font-bold text-xs">CHRONO</button>
+                    <button @click="forTimeType = 'down'" :class="forTimeType === 'down' ? 'btn-accent' : 'text-gray-500'" class="flex-1 py-3 rounded-xl font-bold text-xs">TIME CAP</button>
                 </div>
 
-                <div v-if="activeMode === 'AMRAP' || (activeMode === 'FOR TIME' && forTimeType === 'down')" class="bg-card p-8 rounded-3xl text-center text-center">
-                    <label class="text-[10px] font-bold text-gray-500 uppercase block mb-4">Minutos (1-60)</label>
-                    <select v-model="quickDuration" class="text-6xl font-black">
-                        <option v-for="n in 60" :value="n">{{ n }} MIN</option>
-                    </select>
-                </div>
-
-                <div v-if="activeMode === 'EMOM'" class="space-y-4">
-                    <div class="bg-card p-8 rounded-3xl text-center">
-                        <label class="text-[10px] font-bold text-gray-500 uppercase block mb-4">Intervalo (Cada...)</label>
-                        <select v-model="emomInterval" class="text-4xl font-black">
-                            <option v-for="opt in emomOptions" :value="opt.val">{{ opt.label }}</option>
+                <div class="bg-card p-8 rounded-[32px] text-center">
+                    <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-4">Configuración</label>
+                    
+                    <div v-if="activeMode === 'AMRAP' || (activeMode === 'FOR TIME' && forTimeType === 'down')">
+                        <select v-model="quickDuration" class="text-7xl font-teko">
+                            <option v-for="n in 60" :value="n">{{ n }} MIN</option>
                         </select>
                     </div>
-                    <div class="bg-card p-8 rounded-3xl text-center">
-                        <label class="text-[10px] font-bold text-gray-500 uppercase block mb-4">Rondas Totales</label>
-                        <select v-model="quickRounds" class="text-4xl font-black">
-                            <option v-for="n in 30" :value="n">{{ n }} RONDAS</option>
-                        </select>
-                    </div>
-                </div>
 
-                <div v-if="activeMode === 'TABATA'" class="space-y-4">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-card p-6 rounded-3xl text-center">
-                            <label class="text-[10px] font-bold text-gray-500 uppercase block mb-2">Work</label>
-                            <select v-model.number="tabataWork" class="text-3xl font-black">
-                                <option v-for="s in [10,15,20,30,40,45,60]" :value="s">{{ s }}s</option>
+                    <div v-if="activeMode === 'EMOM'" class="space-y-8">
+                        <div>
+                            <p class="text-[10px] text-gray-400 mb-2">CADA...</p>
+                            <select v-model="emomInterval" class="text-6xl font-teko">
+                                <option v-for="o in emomOptions" :value="o.val">{{ o.label }}</option>
                             </select>
                         </div>
-                        <div class="bg-card p-6 rounded-3xl text-center">
-                            <label class="text-[10px] font-bold text-gray-500 uppercase block mb-2 text-cyan-500">Rest</label>
-                            <select v-model.number="tabataRest" class="text-3xl font-black text-cyan-400">
-                                <option v-for="s in [0,5,10,15,20,30]" :value="s">{{ s }}s</option>
+                        <div>
+                            <p class="text-[10px] text-gray-400 mb-2">RONDAS</p>
+                            <select v-model="quickRounds" class="text-6xl font-teko">
+                                <option v-for="n in 50" :value="n">{{ n }}</option>
                             </select>
                         </div>
                     </div>
-                    <div class="bg-card p-8 rounded-3xl text-center">
-                        <label class="text-[10px] font-bold text-gray-500 uppercase block mb-4">Rondas Totales</label>
-                        <select v-model="quickRounds" class="text-4xl font-black">
-                            <option v-for="n in [4,8,12,16,20,24,30,40,50]" :value="n">{{ n }} RONDAS</option>
-                        </select>
+
+                    <div v-if="activeMode === 'TABATA'" class="space-y-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><p class="text-[9px] text-gray-500">WORK</p><select v-model="tabataWork" class="text-4xl font-teko">{{ tabataWork }}s</select></div>
+                            <div><p class="text-[9px] text-gray-500 text-cyan-400">REST</p><select v-model="tabataRest" class="text-4xl font-teko text-cyan-400">{{ tabataRest }}s</select></div>
+                        </div>
+                        <div class="pt-4 border-t border-white/5">
+                            <p class="text-[9px] text-gray-500">RONDAS</p>
+                            <select v-model="quickRounds" class="text-5xl font-teko">{{ quickRounds }}</select>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <button @click="startQuickWorkout" class="builder-btn mt-10">Iniciar</button>
+            <button @click="startQuickWorkout" class="btn-accent w-full py-6 mt-10 text-2xl font-teko tracking-widest uppercase italic">Comenzar</button>
         </div>
 
-        <div v-else-if="screen === 'play'" :class="isResting ? 'bg-blue-900/40' : ''" class="h-screen fixed inset-0 z-50 flex flex-col items-center justify-between p-10 py-24 bg-black transition-colors duration-500">
+        <div v-else-if="screen === 'play'" :class="isResting ? 'bg-[#001529]' : ''" class="h-screen fixed inset-0 z-50 flex flex-col items-center justify-between p-10 py-20 transition-all duration-500 bg-black">
             <div class="text-center w-full">
-                <span class="bg-white/10 px-4 py-1 rounded-full text-[10px] font-bold uppercase text-gray-400 tracking-widest">{{ activeMode }}</span>
+                <div class="inline-block px-4 py-1 rounded-full bg-white/10 text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 mb-8">{{ activeMode }}</div>
                 
-                <div v-if="activeMode === 'AMRAP'" class="mt-8">
-                    <h2 class="text-8xl font-black text-orange-500 italic leading-none">{{ rounds }}</h2>
-                    <p class="text-[10px] font-bold text-gray-600 uppercase mt-4">Rounds Completadas</p>
-                </div>
-
-                <div v-else class="mt-8">
-                    <h2 class="text-4xl font-black italic uppercase leading-none">{{ isResting ? 'REST' : (currentEx.name || 'WORK') }}</h2>
-                    <p class="text-[10px] font-bold mt-4 opacity-40">Ronda {{ currentRound }} / {{ activeMode === 'MIX' ? routine.series : quickRounds }}</p>
+                <h2 class="text-4xl font-teko font-bold uppercase tracking-tight italic">{{ isResting ? 'DESCANSO' : (currentEx.name || '¡DALE!') }}</h2>
+                <p v-if="activeMode === 'MIX'" class="text-[#E2FF3B] font-bold mt-2 uppercase text-xs">{{ currentEx.note }}</p>
+                
+                <div v-if="activeMode === 'AMRAP'" class="mt-4">
+                    <span class="text-8xl font-teko font-bold text-orange-500 italic leading-none">{{ rounds }}</span>
+                    <p class="text-[10px] font-black text-gray-600 uppercase tracking-widest">Rondas</p>
                 </div>
             </div>
 
-            <div class="text-[130px] font-black font-mono leading-none tracking-tighter tabular-nums" :class="isResting ? 'text-cyan-400' : 'text-white'">
+            <div class="text-[140px] font-teko font-bold leading-none tabular-nums tracking-tighter" :class="isResting ? 'text-cyan-400' : 'text-white'">
                 {{ formatTime(timer) }}
             </div>
 
             <div class="w-full space-y-6">
-                <button v-if="activeMode === 'AMRAP'" @click="addRound" 
-                        :class="cooldown ? 'btn-cooldown-active' : ''" 
-                        class="btn-plus-one w-full py-10 rounded-[40px] font-black text-5xl italic transition-all">
-                    {{ cooldown ? '---' : '+1' }}
+                <button v-if="activeMode === 'AMRAP'" @click="addRound" :class="cooldown ? 'opacity-20' : ''" class="btn-amrap w-full py-10 italic shadow-xl">
+                    +1
                 </button>
-                <button v-else @click="nextStep" class="w-full bg-white text-black py-8 rounded-[40px] font-black text-2xl uppercase tracking-tighter active:scale-95">
-                    {{ isResting ? 'SKIP' : 'DONE' }}
+                
+                <button v-else @click="nextStep" class="w-full bg-white text-black py-8 rounded-[30px] font-black text-3xl uppercase tracking-tighter italic">
+                    {{ isResting ? 'SALTAR' : 'LISTO' }}
                 </button>
-                <button @click="stopWorkout" class="w-full text-white/20 font-black uppercase text-[10px] tracking-widest py-2">Finalizar</button>
+                
+                <button @click="stopWorkout" class="w-full text-white/20 font-black uppercase text-[10px] tracking-widest">Finalizar</button>
             </div>
         </div>
 
-        <div v-else-if="screen === 'builder'" class="pt-10 pb-40">
-            <div class="flex items-center mb-8">
-                <button @click="screen = 'menu'"><i class="fas fa-arrow-left text-gray-500 text-xl text-center"></i></button>
-                <h1 class="flex-1 text-center font-black uppercase italic text-2xl">Builder</h1>
+        <div v-else-if="screen === 'summary'" class="p-8 pt-20 text-center animate-in zoom-in">
+            <div class="mb-10">
+                <i class="fas fa-trophy text-6xl text-[#E2FF3B] mb-6"></i>
+                <h1 class="text-5xl font-teko font-bold uppercase italic">¡TERMINADO!</h1>
+                <p class="text-gray-500 font-bold uppercase text-xs tracking-widest">Entrenamiento completado</p>
             </div>
-            <div class="bg-card rounded-3xl p-6 mb-6">
-                <input v-model="routine.name" placeholder="NOMBRE RUTINA..." class="w-full bg-transparent text-2xl font-black mb-6 text-center outline-none border-b border-gray-800 pb-2">
-                <div class="flex items-center justify-between">
-                    <span class="text-[10px] font-bold text-gray-500 uppercase">Series</span>
-                    <select v-model="routine.series" class="w-32 text-xl font-black">
-                        <option v-for="n in 12" :value="n">{{ n }} SERIES</option>
-                    </select>
-                </div>
+
+            <div v-if="activeMode === 'AMRAP'" class="bg-card p-10 rounded-[40px] mb-10">
+                <p class="text-xs text-gray-500 font-black uppercase mb-2">Resultado Final</p>
+                <h2 class="text-8xl font-teko font-bold text-[#E2FF3B] italic leading-none">{{ rounds }} <span class="text-2xl">RONDAS</span></h2>
             </div>
-            <div v-for="(ex, index) in routine.exercises" :key="ex.id" class="bg-card rounded-3xl p-6 mb-4 relative">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="text-[#E2FF3B] font-black italic text-2xl">{{ index + 1 }}</span>
-                    <input v-model="ex.name" placeholder="Ejercicio..." class="bg-input rounded-xl px-4 py-2 flex-1 mx-3 outline-none font-bold text-sm">
-                    <button @click="removeExercise(index)" class="text-red-500/30">×</button>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <input v-model="ex.note" placeholder="Nota" class="bg-input p-3 rounded-xl text-center text-xs font-bold outline-none">
-                    <select v-model="ex.restTime" class="bg-input p-3 rounded-xl text-xs font-bold text-cyan-400">
-                        <option v-for="t in [0,30,45,60,90,120,180]" :value="t">{{ t }}s DESC</option>
-                    </select>
-                </div>
+
+            <div class="space-y-4">
+                <button @click="exportToNotes" class="w-full py-5 bg-white/5 rounded-2xl font-bold uppercase text-xs tracking-widest flex items-center justify-center gap-3">
+                    <i class="fas fa-share-square"></i> Exportar a Notas
+                </button>
+                <button @click="screen = 'menu'" class="btn-accent w-full py-5 text-xl font-teko italic uppercase tracking-widest">Volver al Inicio</button>
             </div>
-            <button @click="addExercise" class="w-full py-4 border-2 border-dashed border-gray-800 rounded-3xl text-gray-500 font-bold uppercase text-[10px] mb-10 tracking-widest">+ Añadir</button>
-            <button @click="startWorkout" class="builder-btn fixed bottom-10 left-6 right-6 w-[calc(100%-48px)]">Empezar</button>
         </div>
 
     </div>
@@ -197,29 +229,40 @@
         const { createApp } = Vue;
         createApp({
             data() {
-                const emomOpts = [];
-                for(let s=60; s<=300; s+=15) {
+                const emomOptions = [];
+                for(let s=15; s<=300; s+=15) {
                     const m = Math.floor(s/60); const sc = s%60;
-                    emomOpts.push({ val: s, label: `${m}:${sc.toString().padStart(2,'0')}` });
+                    emomOptions.push({ val: s, label: `${m}:${sc.toString().padStart(2,'0')}` });
                 }
                 return {
-                    screen: 'menu', activeMode: '', activeColor: '',
-                    quickDuration: 10, quickRounds: 8,
-                    forTimeType: 'up', emomInterval: 60, emomOptions: emomOpts,
-                    tabataWork: 20, tabataRest: 10,
+                    screen: 'menu', savedWorkouts: [], activeMode: '', activeColor: '',
+                    routine: { id: null, name: '', series: 3, exercises: [] },
+                    quickDuration: 10, quickRounds: 8, forTimeType: 'up',
+                    emomInterval: 60, emomOptions, tabataWork: 20, tabataRest: 10,
                     rounds: 0, cooldown: false, currentRound: 1, currentExIdx: 0,
-                    isResting: false, timer: 0, interval: null,
-                    routine: { name: "", series: 3, exercises: [] }
+                    isResting: false, timer: 0, interval: null
                 }
             },
+            mounted() {
+                const saved = localStorage.getItem('box_workouts');
+                if(saved) this.savedWorkouts = JSON.parse(saved);
+            },
             methods: {
-                openQuick(mode, color) {
-                    this.activeMode = mode; this.activeColor = color; this.screen = 'quick_config';
-                    this.rounds = 0;
+                openBuilder() {
+                    this.routine = { id: Date.now(), name: '', series: 3, exercises: [{ id: 1, name: '', workMode: 'libre', workSeconds: 30, restTime: 15, note: '' }] };
+                    this.screen = 'builder';
                 },
-                addExercise() { this.routine.exercises.push({ id: Date.now(), name: "", note: "", restTime: 60 }); },
+                addExercise() { this.routine.exercises.push({ id: Date.now(), name: '', workMode: 'libre', workSeconds: 30, restTime: 15, note: '' }); },
                 removeExercise(idx) { this.routine.exercises.splice(idx, 1); },
-                addRound() { if(!this.cooldown) { this.rounds++; this.cooldown = true; setTimeout(() => this.cooldown = false, 1500); } },
+                saveAndStart() {
+                    if(!this.routine.name) this.routine.name = "Rutina " + (this.savedWorkouts.length + 1);
+                    this.savedWorkouts = this.savedWorkouts.filter(w => w.id !== this.routine.id);
+                    this.savedWorkouts.unshift({...this.routine});
+                    localStorage.setItem('box_workouts', JSON.stringify(this.savedWorkouts));
+                    this.startWorkout(this.routine);
+                },
+                deleteWorkout(id) { this.savedWorkouts = this.savedWorkouts.filter(w => w.id !== id); localStorage.setItem('box_workouts', JSON.stringify(this.savedWorkouts)); },
+                openQuick(mode, color) { this.activeMode = mode; this.activeColor = color; this.screen = 'quick_config'; this.rounds = 0; },
                 startQuickWorkout() {
                     this.screen = 'play'; this.currentRound = 1; this.isResting = false;
                     if(this.activeMode === 'AMRAP') this.timer = this.quickDuration * 60;
@@ -228,43 +271,58 @@
                     else if(this.activeMode === 'TABATA') this.timer = this.tabataWork;
                     this.runTimer();
                 },
-                startWorkout() {
-                    if(this.routine.exercises.length === 0) return;
-                    this.activeMode = 'MIX'; this.screen = 'play'; this.currentRound = 1; this.currentExIdx = 0; this.timer = 0;
-                    this.runTimer();
+                startWorkout(workout) {
+                    this.routine = workout; this.activeMode = 'MIX'; this.screen = 'play'; 
+                    this.currentRound = 1; this.currentExIdx = 0; this.isResting = false;
+                    this.setMixTimer(); this.runTimer();
+                },
+                setMixTimer() {
+                    const ex = this.routine.exercises[this.currentExIdx];
+                    this.timer = ex.workMode === 'tiempo' ? ex.workSeconds : 0;
                 },
                 runTimer() {
                     clearInterval(this.interval);
                     this.interval = setInterval(() => {
-                        const isDown = this.isResting || ['AMRAP','EMOM','TABATA'].includes(this.activeMode) || (this.activeMode === 'FOR TIME' && this.forTimeType === 'down');
+                        const isDown = this.isResting || ['AMRAP','EMOM','TABATA'].includes(this.activeMode) || 
+                                       (this.activeMode === 'FOR TIME' && this.forTimeType === 'down') ||
+                                       (this.activeMode === 'MIX' && !this.isResting && this.routine.exercises[this.currentExIdx].workMode === 'tiempo');
+                        
                         if(isDown) { if(this.timer > 0) this.timer--; else this.nextStep(); }
                         else this.timer++;
                     }, 1000);
                 },
                 nextStep() {
                     if(this.activeMode === 'EMOM') {
-                        this.currentRound++; if(this.currentRound > this.quickRounds) this.stopWorkout(); else this.timer = this.emomInterval;
+                        if(this.currentRound < this.quickRounds) { this.currentRound++; this.timer = this.emomInterval; } else this.finish();
                     } else if(this.activeMode === 'TABATA') {
-                        if(!this.isResting) { this.isResting = true; this.timer = this.tabataRest; }
-                        else { this.isResting = false; this.timer = this.tabataWork; this.currentRound++; if(this.currentRound > this.quickRounds) this.stopWorkout(); }
+                        if(!this.isResting) { this.isResting = true; this.timer = this.tabataRest; } 
+                        else { this.isResting = false; this.currentRound++; if(this.currentRound > this.quickRounds) this.finish(); else this.timer = this.tabataWork; }
                     } else if(this.activeMode === 'MIX') {
-                        if(!this.isResting && this.routine.exercises[this.currentExIdx].restTime > 0) { 
-                            this.isResting = true; this.timer = this.routine.exercises[this.currentExIdx].restTime; 
-                        } else {
-                            this.isResting = false; this.timer = 0;
-                            if(this.currentExIdx < this.routine.exercises.length - 1) this.currentExIdx++;
-                            else if(this.currentRound < this.routine.series) { this.currentExIdx = 0; this.currentRound++; }
-                            else this.stopWorkout();
+                        const ex = this.routine.exercises[this.currentExIdx];
+                        if(!this.isResting && ex.restTime > 0) { this.isResting = true; this.timer = ex.restTime; }
+                        else {
+                            this.isResting = false;
+                            if(this.currentExIdx < this.routine.exercises.length - 1) { this.currentExIdx++; this.setMixTimer(); }
+                            else if(this.currentRound < this.routine.series) { this.currentRound++; this.currentExIdx = 0; this.setMixTimer(); }
+                            else this.finish();
                         }
-                    } else { this.stopWorkout(); }
+                    } else this.finish();
                 },
-                formatTime(s) {
-                    const m = Math.floor(s / 60); const sc = s % 60;
-                    return `${m}:${sc.toString().padStart(2, '0')}`;
-                },
-                stopWorkout() { clearInterval(this.interval); this.screen = 'menu'; }
+                addRound() { if(!this.cooldown) { this.rounds++; this.cooldown = true; setTimeout(()=>this.cooldown=false, 1200); }},
+                formatTime(s) { const m = Math.floor(s/60); const sc = s%60; return `${m}:${sc.toString().padStart(2,'0')}`; },
+                finish() { clearInterval(this.interval); this.screen = 'summary'; },
+                stopWorkout() { clearInterval(this.interval); this.screen = 'menu'; },
+                exportToNotes() {
+                    const fecha = new Date().toLocaleDateString();
+                    const texto = `🔥 BOXTIMER - ${fecha}\nMODO: ${this.activeMode}\nRESULTADO: ${this.activeMode === 'AMRAP' ? this.rounds + ' RONDAS' : 'Completado'}\n\nEntrenado con BOXTIMER App`;
+                    if (navigator.share) {
+                        navigator.share({ title: 'Resultado BOXTIMER', text: texto });
+                    } else {
+                        navigator.clipboard.writeText(texto); alert("Resultado copiado al portapapeles. ¡Pégalo en tus Notas!");
+                    }
+                }
             },
-            computed: { currentEx() { return this.routine.exercises[this.currentExIdx] || {}; } }
+            computed: { currentEx() { return (this.activeMode === 'MIX' && this.routine.exercises) ? this.routine.exercises[this.currentExIdx] : {name: ''}; } }
         }).mount('#app');
     </script>
 </body>
